@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tiny.cloud/1/jzjfv95g444axux6aa5sawaysg95j91kuj4dyoye8xzhmngp/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>result</title>
+
+    <script>
+        var tiny_edit = {
+            selector: "#tinyEdit",
+            inline: true
+        }
+
+        tinymce.init(tiny_edit);
+    
+    </script>
+</head>
+<body>
+    <h1>Hello Post!</h1>
+
+    <div id="tinyEdit">
+        <%- textVal %>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tiny.cloud/1/jzjfv95g444axux6aa5sawaysg95j91kuj4dyoye8xzhmngp/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>TinyMCE</title>
+
+    <script>
+        var tiny_textArea = {
+            selector: "#mytextareaId",
+            width: 800,
+            height: 350,
+            resize: false,
+            setup: function(editor){
+                alert(editor);
+            },
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+            menu: {
+                favs: {title: 'My Favorites', items: 'code visualaid | searchreplace | spellchecker | emoticons'}
+            },
+            menubar: 'favs file edit view insert format tools table help',
+            plugins: [
+                'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+                'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+                'table emoticons template paste help'
+            ],
+            auto_focus: 'mytextareaId'
+        }
+
+        var tiny_div = {
+            selector: "#onlyPrint",
+            inline: true,
+            hidden_input: false
+        }
+
+        tinymce.init(tiny_textArea);
+        tinymce.init(tiny_div);
+    </script>
+</head>
+
+<body>
+    
+
+    <div style="width: 800px; height: 350px;">
+        <form action="/tinyPost" method="POST">
+            <textarea name="mytextarea" id="mytextareaId">
+                <h1>test</h1>
+            </textarea>
+            <input type="submit" value="전송">
+        </form>
+    </div>
+
+    <button onclick="areaClick();">textarea추출</button>
+    <button onclick="tinyGet();">라이브러리 함수 사용</button>
+    <button onclick="tinyAjax();">ajax 통신</button>
+
+    <div id="onlyPrint" style="width: 800px;">
+        <input type="hidden" value="test">
+    </div>
+
+    <script>
+        function areaClick() {
+            var text = document.getElementById("mytextareaId").value;
+            document.getElementById("onlyPrint").innerHTML = text;
+        }
+
+        function tinyGet(){
+            var text = tinymce.get("mytextareaId").getContent();
+            document.getElementById("onlyPrint").innerHTML = text;
+        }
+        
+        function tinyAjax(){
+            $.ajax({
+                url: "/tinyajax",
+                method: "post",
+                data: {data: tinymce.get("mytextareaId").getContent()},
+                success: function(result){
+                    $("#onlyPrint").html(result.result);
+                },
+                error: function(err){
+                    alert(err);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

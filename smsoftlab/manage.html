@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KSM 기기 관리</title>
+    <link rel="stylesheet" href="css/ksm_dev_manage.css">
+    <script src="js/ksm_dev_manage.js"></script>
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/76b49c6d9b.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <!-- 전체 틀 -->
+    <div id="container">
+        <!-- content 틀 -->
+        <div id="content-wrapper" class="floatLeft">
+            <!-- 등록 편집 틀 -->
+            <div id="u-m-wrapper">
+                <!-- 사용 등록/편집 -->
+                <div id="use-wrapper" class="border1 BGColorf2 floatLeft">
+                    <h4>사용 등록/편집</h4>
+                    <div>
+                        <label for="inputDevNo">기기번호</label>
+                        <input type="text" id="inputDevNo">
+                    </div>
+                    <div>
+                        <label for="inputUser">사 용 자</label>
+                        <input type="text" id="inputUser">
+                    </div>
+                    <div>
+                        <label for="inputUseDate">사용일자</label>
+                        <input type="date" id="inputUseDate">
+                    </div>
+                    <div>
+                        <label for="inputReturnDate">반납일자</label>
+                        <input type="date" id="inputReturnDate">
+                    </div>
+                    <div>
+                        <label for="useRemark">비고</label>
+                        <textarea id="useRemark" rows="7"></textarea>
+                    </div>
+                    <input type="button" value="등록" id="useToggleBtn" class="toggleBtn" onclick="setUser();">
+                    <input type="button" value="취소" id="clearUseBtn" onclick="clearUserForm();" class="clearBtn">
+                </div>
+
+                <!-- 기기관리 등록/편집 -->
+                <div id="machine-wrapper" class="border1 BGColorf2 floatLeft">
+                    <h4>기기관리 등록/편집</h4>
+                    <div>
+                        <label>기기번호</label>
+                        <span id="devNo"></span>
+                    </div>
+                    <div>
+                        <label for="inputModel">모델명</label>
+                        <input type="text" id="inputModel">
+                    </div>
+                    <div>
+                        <label for="inputCpu">CPU</label>
+                        <input type="text" id="inputCpu">
+                    </div>
+                    <div id="SSDWrapper">
+                        <label for="inputSSD1">SSD</label>
+                        <input type="text" id="inputSSD1">
+                        <input type="text" id="inputSSD2">
+                        <input type="text" id="inputSSD3">
+                    </div>
+                    <div id="HDDWrapper">
+                        <label for="inputHDD1">HDD</label>
+                        <input type="text" id="inputHDD1">
+                        <input type="text" id="inputHDD2">
+                        <input type="text" id="inputHDD3">
+                    </div>
+                    <div>
+                        <label for="inputMem">메모리</label>
+                        <input type="text" id="inputMem">
+                    </div>
+                    <div>
+                        <label for="inputOS">OS</label>
+                        <input type="text" id="inputOS">
+                    </div>
+                    <div>
+                        <label for="inputVGA">VGA</label>
+                        <input type="text" id="inputVGA">
+                    </div>
+                    <div>
+                        <label for="inputUseDate">입고일자</label>
+                        <input type="date" id="inputUseDate2">
+                    </div>
+                    <div>
+                        <label for="inputReturnDate">수정일자</label>
+                        <input type="date" id="inputReturnDate2">
+                    </div>
+                    <div>
+                        <label for="inputPosition">위치</label>
+                        <input type="text" id="inputPosition">
+                    </div>
+                    <div>
+                        <label for="inputStat">상태</label>
+                        <select name="stat" id="inputStat">
+                            <option value="양호">양호</option>
+                            <option value="고장">고장</option>
+                            <option value="폐기">폐기</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="inputPrice">구입가격</label>
+                        <input type="text" id="inputPrice">
+                    </div>
+                    <div id="remarkWrapper">
+                        <label for="devRemark" style="width: 50px;">비고</label>
+                        <textarea id="devRemark" rows="7"></textarea>
+                    </div>
+                    <span id="machineBtnWrapper">
+                        <input type="button" value="등록" id="devToggleBtn" class="toggleBtn" onclick="setMachine();">
+                        <input type="button" value="취소" id="clearMachineBtn" onclick="clearMachineForm();" class="clearBtn">
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- 리스트 틀 -->
+            <div id="list-wrapper">
+                <!-- 사용 히스토리 목록 -->
+                <div id="use-list-wrapper" class="border1 BGColorf2 floatLeft">
+                    <div class="reloadWrapper">
+                        <button class="reloadBtn" onclick="userReload();">재조회 <i class="fas fa-redo-alt"></i></button>
+                    </div>
+                    <div class="tableWrapper">
+                        <table id="userListTable">
+                            <tr style="cursor: default;">
+                                <th>No.</th>
+                                <th>기기번호</th>
+                                <th>사용일자</th>
+                                <th>반납일자</th>
+                                <th>삭제</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 기기관리 히스토리 목록 -->
+                <div id="machine-list-wrapper" class="border1 BGColorf2 floatLeft">
+                    <div class="reloadWrapper">
+                        <button class="reloadBtn" onclick="machineReload();">재조회 <i class="fas fa-redo-alt"></i></button>
+                    </div>
+                    <div class="tableWrapper" style="overflow-x: auto;">
+                        <table id="machineListTable">
+                            <tr style="cursor: default">
+                                <th class="px50">No.</th>
+                                <th class="px150">모델명</th>
+                                <th class="px150">CPU</th>
+                                <th class="px150">SSD1</th>
+                                <th class="px150">SSD2</th>
+                                <th class="px150">SSD3</th>
+                                <th class="px150">HDD1</th>
+                                <th class="px150">HDD2</th>
+                                <th class="px150">HDD3</th>
+                                <th class="px150">메모리</th>
+                                <th class="px100">OS</th>
+                                <th class="px150">VGA</th>
+                                <th class="px100">입고일</th>
+                                <th class="px100">수정일</th>
+                                <th class="px100">위치</th>
+                                <th class="px50">상태</th>
+                                <th class="px100">구입가격</th>
+                                <th class="px150">기타</th>
+                                <th class="px50">삭제</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 사이드바 틀 -->
+        <div id="sideBar" class="floatLeft">
+            <img src="images/hd_logo.png" width="100%" height="auto" style="margin: 30px 0;">
+            <span id="titleFont">Admin Page</span>
+            <div id="notice">
+                <span>&#8251; 단축키 &#8251;</span><br>
+                <span>ctrl + alt + c (복사)</span><br>
+                <span>ctrl + alt + v (붙여넣기)</span>
+            </div>
+            <button class="machineManage" id="machineCopy" onclick="machineCopy();">기기관리 내용 복사</button>
+            <button class="machineManage" id="machinePaste" onclick="machinePaste();">기기관리 내용 붙여넣기</button>
+            <div id="subMenu"><i class="fas fa-ellipsis-h"></i></div>
+        </div>
+    </div>
+</body>
+
+</html>
