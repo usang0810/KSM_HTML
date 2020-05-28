@@ -23,6 +23,7 @@ body{
 
 /* 테이블 */
 #calendar-table{
+    position: relative;
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
@@ -81,6 +82,25 @@ body{
     text-align: center;
 }
 
+#todayBtn{
+    position: absolute;
+    left: 0;
+    top: 6px;
+    border: 0px;
+    border-radius: 3px;
+    background-color: rgb(196, 224, 139);
+    color: black;
+}
+
+#todayBtn:hover{
+    cursor: pointer;
+    background-color: rgb(219, 235, 186);
+}
+
+.todayBGColor{
+    background-color: rgb(196, 224, 139);
+}
+
 .calBtn{
     border: 0px;
     background-color: rgb(57, 124, 168);
@@ -124,8 +144,16 @@ body{
     text-align: center !important;
 }
 
+.lunarDate{
+    font-size: 10px;
+}
+
 @media screen and (max-width: 1200px){
     #calendar-table td div{
         font-size: 12px;
+    }
+    
+    .date{
+        font-size: 13px;
     }
 }

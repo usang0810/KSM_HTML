@@ -39,6 +39,10 @@ app.get('/tinyTest2', function(req, res){
     res.render('TinyMCE_test', {});
 });
 
+app.get('/tinyui', function(req, res){
+    res.render('TinyMCE_ui', {});
+})
+
 app.listen(PORT, () => {
     console.log('Server is running at:', PORT);
 });

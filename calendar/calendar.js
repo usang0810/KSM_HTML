@@ -1,99 +1,99 @@
-/*
-    달력의 행 앞에 '주차'가 표시되게 수정
-    공휴일 인식시 빨간날로 처리하게 수정
-*/
-
 // 전역변수 선언 부분
+// 현재 날짜
 let g_today = new Date();
+
+// 달력의 첫째열이 주차를 나타내므로 빈 공백으로 생성
 const DAY_OF_WEEK = ['', '일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
 // 테스트 json
 let g_testObj = {
     msg: "success",
     dataArr: [
-        {date:"20200515", caption:"만기", amount:"19", headCount:"37", balance:"324"},
-        {date:"20200515", caption:"만기", amount:"11", headCount:"23", balance:"8"},
-        {date:"20200515", caption:"만기", amount:"13", headCount:"4", balance:"31"},
-        {date:"20200515", caption:"만기", amount:"7", headCount:"11", balance:"53"},
-        {date:"20200520", caption:"만기", amount:"32", headCount:"53", balance:"6"},
-        {date:"20200520", caption:"만기", amount:"32", headCount:"53", balance:"1001"},
-        {date:"20200530", caption:"만기", amount:"1", headCount:"63", balance:"10"},
-        {date:"20201001", caption:"만기", amount:"5", headCount:"21", balance:"12"},
-        {date:"20201231", caption:"만기", amount:"87", headCount:"9", balance:"152"}
+        { date: "20200515", caption: "만기", amount: "19", headCount: "37", balance: "324" },
+        { date: "20200515", caption: "만기", amount: "11", headCount: "23", balance: "8" },
+        { date: "20200515", caption: "만기", amount: "13", headCount: "4", balance: "31" },
+        { date: "20200515", caption: "만기", amount: "7", headCount: "11", balance: "53" },
+        { date: "20200520", caption: "만기", amount: "32", headCount: "53", balance: "6" },
+        { date: "20200520", caption: "만기", amount: "32", headCount: "53", balance: "1001" },
+        { date: "20200530", caption: "만기", amount: "1", headCount: "63", balance: "10" },
+        { date: "20201001", caption: "만기", amount: "5", headCount: "21", balance: "12" },
+        { date: "20201231", caption: "만기", amount: "87", headCount: "9", balance: "152" },
+        { date: "20200430", caption: "만기", amount: "18", headCount: "33", balance: "120" }
     ]
 };
 
 // 공휴일 테스트용 json
 let g_holidays = {
-    msg:"success",
-    dataArr:[
-        {date:"20200101", caption:"새해"},
-        {date:"20200124", caption:"설날"},
-        {date:"20200125", caption:"설날"},
-        {date:"20200126", caption:"설날"},
-        {date:"20200301", caption:"삼일절"},
-        {date:"20200430", caption:"부처님 오신 날"},
-        {date:"20200505", caption:"어린이날"},
-        {date:"20200606", caption:"현충일"},
-        {date:"20200815", caption:"광복절"},
-        {date:"20200930", caption:"추석"},
-        {date:"20201001", caption:"추석"},
-        {date:"20201002", caption:"추석"},
-        {date:"20201003", caption:"개천절"},
-        {date:"20201009", caption:"한글날"},
-        {date:"20201225", caption:"크리스마스"},
+    msg: "success",
+    dataArr: [
+        { date: "20200101", caption: "새해" },
+        { date: "20200124", caption: "설날" },
+        { date: "20200125", caption: "설날" },
+        { date: "20200126", caption: "설날" },
+        { date: "20200301", caption: "삼일절" },
+        { date: "20200430", caption: "부처님 오신 날" },
+        { date: "20200505", caption: "어린이날" },
+        { date: "20200606", caption: "현충일" },
+        { date: "20200815", caption: "광복절" },
+        { date: "20200930", caption: "추석" },
+        { date: "20201001", caption: "추석" },
+        { date: "20201002", caption: "추석" },
+        { date: "20201003", caption: "개천절" },
+        { date: "20201009", caption: "한글날" },
+        { date: "20201225", caption: "크리스마스" },
     ]
 };
 
 // 로드 함수 시 오늘날짜로 달력 생성
-$(function(){
+$(function () {
     calendarInit(g_today);
 })
 
 // 달력 초기화 함수
-// param = Date
-function calendarInit(date){
+// param = Date object
+function calendarInit(date) {
     var nowYear = date.getFullYear();
     var nowMonth = date.getMonth() + 1;
 
-    var html = 
-    '<colgroup>' +
-    '<col style="width: 50px;">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '<col style="width: calc(14.2% - 50px);">' +
-    '</colgroup>' +
-    '<tr>' +
-    '<td colspan="8" id="manage-row">' +
-    '<button class="calBtn" onclick="changeCalendar(this);">&lt;&lt;</button>' +
-    '<button class="calBtn" onclick="changeCalendar(this);">&lt;</button>' +
-    '<select name="year" id="inputYear" onchange="changeCalendar();">';
-    for(var i=nowYear + 3; i>=nowYear - 3; i--){
+    var html =
+        '<colgroup>' +
+        '<col style="width: 50px;">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '<col style="width: calc(14.2% - 50px);">' +
+        '</colgroup>' +
+        '<tr>' +
+        '<td colspan="8" id="manage-row">' +
+        '<button id="todayBtn" onclick="calendarInit(g_today);">Today</button>' +
+        '<button class="calBtn" onclick="changeCalendar(this);">&lt;&lt;</button>' +
+        '<button class="calBtn" onclick="changeCalendar(this);">&lt;</button>' +
+        '<select name="year" id="inputYear" onchange="changeCalendar();">';
+    for (var i = nowYear + 3; i >= nowYear - 3; i--) {
         html += '<option value=' + i;
-        if(i == nowYear) html += ' selected';
+        if (i == nowYear) html += ' selected';
         html += '>' + i + '</option>';
     }
     html +=
-    '</select>년&nbsp;&nbsp;' +
-    '<select name="month" id="inputMonth" onchange="changeCalendar();">';
-    for(var i=1; i<=12; i++){
+        '</select>년&nbsp;&nbsp;' +
+        '<select name="month" id="inputMonth" onchange="changeCalendar();">';
+    for (var i = 1; i <= 12; i++) {
         html += '<option value=' + i;
-        if(i == nowMonth) html+= ' selected';
+        if (i == nowMonth) html += ' selected';
         html += '>' + i + '</option>';
     }
-    html += 
-    '</select>월' +
-    '<button class="calBtn" onclick="changeCalendar(this);">&gt;</button>' +
-    '<button class="calBtn" onclick="changeCalendar(this);">&gt;&gt;</button>' +
-    '</td>' +
-    '</tr>' +
-    '<tr>';
+    html +=
+        '</select>월' +
+        '<button class="calBtn" onclick="changeCalendar(this);">&gt;</button>' +
+        '<button class="calBtn" onclick="changeCalendar(this);">&gt;&gt;</button>' +
+        '</td>' +
+        '</tr>' +
+        '<tr>';
     // '요일' 생성 반복문
-    for(var i=0; i<DAY_OF_WEEK.length; i++){
+    for (var i = 0; i < DAY_OF_WEEK.length; i++) {
         html += '<td>' + DAY_OF_WEEK[i] + '</td>';
     }
     html += '</tr>';
@@ -104,13 +104,14 @@ function calendarInit(date){
     var firstDay = firstDate.getDay();
 
     var weekCount = 1; // '주차' 표시용 변수
-    html += '<tr class="date-row">' + 
-    '<td class="weekCount">' + weekCount++ + '주</td>';
+    html += '<tr class="date-row">' +
+        '<td class="weekCount">' + weekCount++ + '주</td>';
 
+    // 지난달의 마지막주 출력 부분
     var dateIdx = 0;
-    if(firstDay != 0){
+    if (firstDay != 0) {
         var dateArr = getLastWeek(date);
-        for(var i=0; i<firstDay; i++){
+        for (var i = 0; i < firstDay; i++) {
             html += '<td class="lastNextCaption">' + dateArr[i] + '</td>';
             dateIdx++;
         }
@@ -118,40 +119,40 @@ function calendarInit(date){
 
     // 외부 json에 대한 처리
     let objArr = [];
-    for(var i=0; i<g_testObj.dataArr.length; i++){
+    for (var i = 0; i < g_testObj.dataArr.length; i++) {
         var dateObj = dateFormatter(g_testObj.dataArr[i].date);
-        if(dateObj != null && nowYear == dateObj.year && nowMonth == dateObj.month){
+        if (dateObj != null && nowYear == dateObj.year && nowMonth == dateObj.month) {
             objArr.push(g_testObj.dataArr[i]);
         }
     }
 
     // 공휴일에 대한 처리
     let holidayArr = [];
-    for(var i=0; i<g_holidays.dataArr.length; i++){
+    for (var i = 0; i < g_holidays.dataArr.length; i++) {
         var dateObj = dateFormatter(g_holidays.dataArr[i].date);
-        if(dateObj != null && nowYear == dateObj.year && nowMonth == dateObj.month){
+        if (dateObj != null && nowYear == dateObj.year && nowMonth == dateObj.month) {
             holidayArr.push(g_holidays.dataArr[i]);
         }
     }
 
-    for(var i=firstDate.getDate(); i<=lastDate.getDate(); i++){
+    for (var i = firstDate.getDate(); i <= lastDate.getDate(); i++) {
         var addCaption = '';
         var count = 0;
 
         // 외부 데이터가 있을 시 처리
-        objArr.forEach(function (item, idx){
+        objArr.forEach(function (item, idx) {
             var dateObj = dateFormatter(item.date);
-            if(dateObj.date == i){
-                if(count >= 3){
+            if (dateObj.date == i) {
+                if (count >= 3) {
                     addCaption += '<div class="moreInfo">. . .</div>';
                     return;
                 }
 
                 addCaption +=
-                '<div>' +
-                '<span>' + item.caption + '</span>&nbsp;' +
-                '<span>' + item.amount +'개/ ' + item.headCount + '명/ ' + item.balance + '억원</span>' +
-                '</div>';
+                    '<div>' +
+                    '<span>' + item.caption + '</span>&nbsp;' +
+                    '<span>' + item.amount + '개/ ' + item.headCount + '명/ ' + item.balance + '억원</span>' +
+                    '</div>';
                 count++;
             }
         });
@@ -159,39 +160,43 @@ function calendarInit(date){
         var holidayClass = '';
         var holidayCaption = '';
         // 공휴일이 있을 시 처리
-        holidayArr.forEach(function (item, idx){
+        holidayArr.forEach(function (item, idx) {
             var dateObj = dateFormatter(item.date);
-            if(dateObj.date == i){
+            if (dateObj.date == i) {
                 holidayClass = ' holiday';
                 holidayCaption += ' ' + item.caption;
                 return;
             }
         });
 
-        // 오늘날짜 처리
-        if(g_today.getFullYear() == nowYear
-            && g_today.getMonth() + 1 == nowMonth
-            && g_today.getDate() == i){
+        // 음력 계산
+        var lunDate = solarToLunar(nowYear, nowMonth, i);
 
-                html += '<td class="date' + holidayClass + '" onclick="detailDate(this);">' + i + holidayCaption + ' Today' + addCaption + '</td>';
-        }else{
-            html += '<td class="date' + holidayClass + '" onclick="detailDate(this);">' + i + holidayCaption + addCaption + '</td>';
+        html += '<td class="date';
+        // 오늘날짜시 클래스 추가되게 처리
+        if (g_today.getFullYear() == nowYear
+            && g_today.getMonth() + 1 == nowMonth
+            && g_today.getDate() == i) {
+
+            html += ' todayBGColor'
         }
+        html += holidayClass + '" onclick="detailDate(this);">' + i
+            + lunDate + holidayCaption + addCaption + '</td>';
 
         dateIdx++;
-        if(dateIdx >= 7){
+        if (dateIdx >= 7) {
             dateIdx = 0;
-            if(i == lastDate.getDate()) break;
+            if (i == lastDate.getDate()) break;
             html += '</tr><tr class="date-row">';
             html += '<td class="weekCount">' + weekCount++ + '주</td>';
         }
     }
 
-    if(dateIdx != 0){
+    if (dateIdx != 0) {
         var dateArr = getNextWeek(date);
-        for(var i=dateIdx; i<7; i++){
+        for (var i = dateIdx; i < 7; i++) {
             html += '<td class="lastNextCaption">' + dateArr[i] + '</td>';
-            dateIdx++;7
+            dateIdx++; 7
         }
     }
     html += '</tr>';
@@ -200,13 +205,13 @@ function calendarInit(date){
 }
 
 // 달력에서 지난달의 마지막주 일차를 나타내기위해 값을 얻어오는 함수
-function getLastWeek(date){
+function getLastWeek(date) {
     var beforeMonth = new Date(date.getFullYear(), date.getMonth(), 0);
     var lastDate = beforeMonth.getDate();
     var lastDay = beforeMonth.getDay();
     var dateArr = [];
 
-    for(var i=lastDay; i>=0; i--){
+    for (var i = lastDay; i >= 0; i--) {
         dateArr.push(lastDate - i);
     }
 
@@ -214,13 +219,13 @@ function getLastWeek(date){
 }
 
 // 달력에서 다음달의 첫번째주 일차를 나타내기위해 값을 얻어오는 함수
-function getNextWeek(date){
+function getNextWeek(date) {
     var nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
     var firstDate = 1;
     var firstDay = nextMonth.getDay();
     var dateArr = [0, 0, 0, 0, 0, 0, 0];
 
-    for(var i=firstDay; i<=6; i++){
+    for (var i = firstDay; i <= 6; i++) {
         dateArr[i] = firstDate++;
     }
 
@@ -228,33 +233,33 @@ function getNextWeek(date){
 }
 
 // 버튼, 셀렉박스 클릭 또는 값 변경 시 이벤트핸들러
-function changeCalendar(obj){
+function changeCalendar(obj) {
     var year = $("#inputYear").val();
     var month = $("#inputMonth").val() - 1;
 
-    if(obj !== undefined){
+    if (obj !== undefined) {
         var btnVal = $(obj).text();
 
-        if(btnVal == '<'){
-            if(month == 0){
+        if (btnVal == '<') {
+            if (month == 0) {
                 month = 11;
                 year -= 1;
-            }else{
+            } else {
                 month--;
             }
 
-        }else if(btnVal == '>'){
-            if(month == 12){
+        } else if (btnVal == '>') {
+            if (month == 12) {
                 month == 0;
                 year += 1;
-            }else{
+            } else {
                 month++;
             }
 
-        }else if(btnVal == '<<'){
+        } else if (btnVal == '<<') {
             year--;
 
-        }else if(btnVal == '>>'){
+        } else if (btnVal == '>>') {
             year++;
         }
     }
@@ -262,8 +267,8 @@ function changeCalendar(obj){
 }
 
 // 8byte 문자열로 작성된 날짜값 number로 데이터 타입 변환 후 객체로 반환
-function dateFormatter(strDate){
-    if(strDate.length > 8){
+function dateFormatter(strDate) {
+    if (strDate.length != 8) {
         return null;
     }
 
@@ -271,10 +276,296 @@ function dateFormatter(strDate){
     var month = Number(strDate.slice(4, 6));
     var date = Number(strDate.slice(6, 8));
 
-    return {"year":year, "month":month, "date":date};
+    return { "year": year, "month": month, "date": date };
 }
 
 // 날짜 상세조회
-function detailDate(obj){
+function detailDate(obj) {
     window.open("detail.html", "detail", "width=960px, height=720px");
+}
+
+/*  음력 달력 배열
+    음력은 모든 달이 29일 ~ 30일 으로만 이루어짐
+    음력에도 윤달이 있을 경우 2월에 1일이 추가되는 식이 아니라
+    한달이 추가되어짐
+    1-> 29일, 2->30일
+    3, 4, 5, 6은 윤달이 추가로 생성됨
+    3-> 29일 + 윤29일, 4-> 29일 + 윤30일
+    5-> 30일 + 윤29일, 6-> 30일 + 윤30일
+*/
+const LAST_LUNAR_YEAR = 1969;
+const SOLAR_TO_LUNAR = 1;
+const LUNAR_TO_SOLAR = 2;
+var lunarMonthTable = [
+    [1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1],   /* 양력 1970년 1월은 음력 1969년에 있음 그래서 시작년도는 1969년*/
+    [2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2],
+    [1, 2, 1, 1, 5, 2, 1, 2, 2, 2, 1, 2],   /* 1971 */
+    [1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1],
+    [2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2, 1],
+    [2, 2, 1, 5, 1, 2, 1, 1, 2, 2, 1, 2],
+    [2, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2],
+    [2, 2, 1, 2, 1, 2, 1, 5, 2, 1, 1, 2],
+    [2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1],
+    [2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1],
+    [2, 1, 1, 2, 1, 6, 1, 2, 2, 1, 2, 1],
+    [2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2],
+    [1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 2],   /* 1981 */
+    [2, 1, 2, 3, 2, 1, 1, 2, 2, 1, 2, 2],
+    [2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2],
+    [2, 1, 2, 2, 1, 1, 2, 1, 1, 5, 2, 2],
+    [1, 2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2],
+    [1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1, 1],
+    [2, 1, 2, 2, 1, 5, 2, 2, 1, 2, 1, 2],
+    [1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1],
+    [2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2],
+    [1, 2, 1, 1, 5, 1, 2, 1, 2, 2, 2, 2],
+    [1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2],   /* 1991 */
+    [1, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2],
+    [1, 2, 5, 2, 1, 2, 1, 1, 2, 1, 2, 1],
+    [2, 2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2],
+    [1, 2, 2, 1, 2, 2, 1, 5, 2, 1, 1, 2],
+    [1, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2],
+    [1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1],
+    [2, 1, 1, 2, 3, 2, 2, 1, 2, 2, 2, 1],
+    [2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
+    [2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1],
+    [2, 2, 2, 3, 2, 1, 1, 2, 1, 2, 1, 2],   /* 2001 */
+    [2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1],
+    [2, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2],
+    [1, 5, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2],
+    [1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 1],
+    [2, 1, 2, 1, 2, 1, 5, 2, 2, 1, 2, 2],
+    [1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1, 2],
+    [2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2],
+    [2, 2, 1, 1, 5, 1, 2, 1, 2, 1, 2, 2],
+    [2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2],
+    [2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 1],   /* 2011 */
+    [2, 1, 6, 2, 1, 2, 1, 1, 2, 1, 2, 1],
+    [2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2],
+    [1, 2, 1, 2, 1, 2, 1, 2, 5, 2, 1, 2],
+    [1, 2, 1, 1, 2, 1, 2, 2, 2, 1, 2, 1],
+    [2, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 2],
+    [2, 1, 1, 2, 3, 2, 1, 2, 1, 2, 2, 2],
+    [1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2],
+    [2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2],
+    [2, 1, 2, 5, 2, 1, 1, 2, 1, 2, 1, 2],
+    [1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1],   /* 2021 */
+    [2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2],
+    [1, 5, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2],
+    [1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1],
+    [2, 1, 2, 1, 1, 5, 2, 1, 2, 2, 2, 1],
+    [2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2],
+    [1, 2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2],
+    [1, 2, 2, 1, 5, 1, 2, 1, 1, 2, 2, 1],
+    [2, 2, 1, 2, 2, 1, 1, 2, 1, 1, 2, 2],
+    [1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1],
+    [2, 1, 5, 2, 1, 2, 2, 1, 2, 1, 2, 1],   /* 2031 */
+    [2, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2],
+    [1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 5, 2],
+    [1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1],
+    [2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2],
+    [2, 2, 1, 2, 1, 4, 1, 1, 2, 2, 1, 2],
+    [2, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2],
+    [2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1],
+    [2, 2, 1, 2, 5, 2, 1, 2, 1, 2, 1, 1],
+    [2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1],
+    [2, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2],   /* 2041 */
+    [1, 5, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2],
+    [1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 2]];
+
+// 음력 계산을 위한 객체
+function myDate(year, month, day, leapMonth) {
+    this.year = year;
+    this.month = month;
+    this.day = day;
+    this.leapMonth = leapMonth;
+}
+
+// 양력을 음력으로 계산
+function lunarCalc(year, month, day, type, leapmonth) {
+    var solYear, solMonth, solDay;
+    var lunYear, lunMonth, lunDay;
+
+    // lunLeapMonth는 음력의 윤달인지 아닌지를 확인하기위한 변수
+    // 1일 경우 윤달이고 0일 경우 음달
+    var lunLeapMonth, lunMonthDay;
+    var lunIndex;
+
+    var solMonthDay = [31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    /* range check */
+    if (year < 1970 || year > 2040) {
+        // alert('1970년부터 2040년까지만 지원합니다');
+        return "";
+    }
+
+    /* 속도 개선을 위해 기준 일자를 여러개로 한다 */
+    if (year >= 2030) {
+        /* 기준일자 양력 2000년 1월 1일 (음력 1999년 11월 25일) */
+        solYear = 2030;
+        solMonth = 1;
+        solDay = 1;
+        lunYear = 2029;
+        lunMonth = 11;
+        lunDay = 28;
+        lunLeapMonth = 0;
+
+        solMonthDay[1] = 28;    /* 2030 년 2월 28일 */
+        lunMonthDay = 30;   /* 2029년 11월 */
+    }
+    else if (year >= 2000) {
+        /* 기준일자 양력 2000년 1월 1일 (음력 1999년 11월 25일) */
+        solYear = 2000;
+        solMonth = 1;
+        solDay = 1;
+        lunYear = 1999;
+        lunMonth = 11;
+        lunDay = 25;
+        lunLeapMonth = 0;
+
+        solMonthDay[1] = 29;    /* 2000 년 2월 28일 */
+        lunMonthDay = 30;   /* 1999년 11월 */
+    }
+    else {
+        /* 기준일자 양력 1970년 1월 1일 (음력 1969년 11월 24일) */
+        solYear = 1970;
+        solMonth = 1;
+        solDay = 1;
+        lunYear = 1969;
+        lunMonth = 11;
+        lunDay = 24;
+        lunLeapMonth = 0;
+
+        solMonthDay[1] = 28;    /* 1970 년 2월 28일 */
+        lunMonthDay = 30;   /* 1969년 11월 */
+    }
+
+    lunIndex = lunYear - LAST_LUNAR_YEAR;
+
+    // type이 1일때는 입력받은 양력 값에 대한 음력값을 반환
+    // 2일 때는 입력받은 음력 값에 대한 양력값을 반환
+    // 반복문이 돌면서 양력 값들과 음력 값들을 1일 씩 증가시키고
+    // 입력받은 날짜값과 양력 값이 일치할 때 음력값을 반환함
+    while (true) {
+        if (type == 1 &&
+            year == solYear &&
+            month == solMonth &&
+            day == solDay) {
+            return new myDate(lunYear, lunMonth, lunDay, lunLeapMonth);
+        }
+        else if (type == 2 &&
+            year == lunYear &&
+            month == lunMonth &&
+            day == lunDay &&
+            leapmonth == lunLeapMonth) {
+            return new myDate(solYear, solMonth, solDay, 0);
+        }
+
+        // 양력의 마지막 날일 경우 년도를 증가시키고 나머지 초기화
+        if (solMonth == 12 && solDay == 31) {
+            solYear++;
+            solMonth = 1;
+            solDay = 1;
+
+            // 윤년일 시 2월달의 총 일수를 1일 증가
+            if (solYear % 400 == 0)
+                solMonthDay[1] = 29;
+            else if (solYear % 100 == 0)
+                solMonthDay[1] = 28;
+            else if (solYear % 4 == 0)
+                solMonthDay[1] = 29;
+            else
+                solMonthDay[1] = 28;
+
+        }
+        // 현재 날짜가 달의 마지막 날짜를 가리키고 있을 시 달을 증가시키고 날짜 1로 초기화
+        else if (solMonthDay[solMonth - 1] == solDay) {
+            solMonth++;
+            solDay = 1;
+        }
+        else
+            solDay++;
+
+        // 음력의 마지막 날인 경우 년도를 증가시키고 달과 일수를 초기화
+        if (lunMonth == 12 &&
+            ((lunarMonthTable[lunIndex][lunMonth - 1] == 1 && lunDay == 29) ||
+                (lunarMonthTable[lunIndex][lunMonth - 1] == 2 && lunDay == 30))) {
+            lunYear++;
+            lunMonth = 1;
+            lunDay = 1;
+
+            if (lunYear > 2043) {
+                alert("입력하신 달은 없습니다.");
+                break;
+            }
+
+            // 년도가 바꼈으니 index값 수정
+            lunIndex = lunYear - LAST_LUNAR_YEAR;
+
+            // 음력의 1월에는 1 or 2만 있으므로 1과 2만 비교하면됨
+            if (lunarMonthTable[lunIndex][lunMonth - 1] == 1)
+                lunMonthDay = 29;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 2)
+                lunMonthDay = 30;
+        }
+        // 현재날짜가 이번달의 마지막날짜와 일치할 경우
+        else if (lunDay == lunMonthDay) {
+
+            // 윤달인데 윤달계산을 안했을 경우 달의 숫자는 증가시키면 안됨
+            if (lunarMonthTable[lunIndex][lunMonth - 1] >= 3
+                && lunLeapMonth == 0) {
+                lunDay = 1;
+                lunLeapMonth = 1;
+            }
+            // 음달이거나 윤달을 계산 했을 겨우 달을 증가시키고 lunLeapMonth값 초기화
+            else {
+                lunMonth++;
+                lunDay = 1;
+                lunLeapMonth = 0;
+            }
+
+            // 음력의 달에 맞는 마지막날짜 초기화
+            if (lunarMonthTable[lunIndex][lunMonth - 1] == 1)
+                lunMonthDay = 29;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 2)
+                lunMonthDay = 30;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 3)
+                lunMonthDay = 29;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 4 &&
+                lunLeapMonth == 0)
+                lunMonthDay = 29;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 4 &&
+                lunLeapMonth == 1)
+                lunMonthDay = 30;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 5 &&
+                lunLeapMonth == 0)
+                lunMonthDay = 30;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 5 &&
+                lunLeapMonth == 1)
+                lunMonthDay = 29;
+            else if (lunarMonthTable[lunIndex][lunMonth - 1] == 6)
+                lunMonthDay = 30;
+        }
+        else
+            lunDay++;
+    }
+}
+
+// 양력을 음력날짜로 변환
+function solarToLunar(solYear, solMonth, solDay) {
+    // 날짜 형식이 안맞을 경우 공백 반환
+    if (!solYear || solYear == 0 ||
+        !solMonth || solMonth == 0 ||
+        !solDay || solDay == 0) {
+        return "";
+    }
+
+    /* 양력/음력 변환 */
+    var date = lunarCalc(solYear, solMonth, solDay, SOLAR_TO_LUNAR);
+
+    // 음력 배열의 범위를 초과하면 공백 반환
+    if(date == undefined || date == "" || date == null)
+        return "";
+    else
+        return "<span class='lunarDate'> " + (date.leapMonth ? "(윤)" : "") + date.month + "." + date.day + "</span>";
 }
