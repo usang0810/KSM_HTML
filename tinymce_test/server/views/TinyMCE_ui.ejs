@@ -11,24 +11,73 @@
     <title>ui test</title>
 
     <script>
-        tiny_textarea = {
+        let tiny_textarea = {
             selector: '#edit',  // change this value according to your html
             menubar: 'file edit view insert format tools table help',
-            toolbar: 'fontselect | fontsizeselect',
+            menu: {
+                file: { title: 'File', items: 'newdocument restoredraft | preview | print ' },
+                edit: { title: 'Edit', items: 'undo redo | cut copy paste | selectall | searchreplace' },
+                view: { title: 'View', items: 'code | visualaid visualchars visualblocks | spellchecker | preview fullscreen' },
+                insert: { title: 'Insert', items: 'image link media template codesample inserttable | charmap emoticons hr | pagebreak nonbreaking anchor toc | insertdatetime' },
+                format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | formats blockformats fontformats fontsizes align | forecolor backcolor | removeformat' },
+                tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | code wordcount' },
+                table: { title: 'Table', items: 'inserttable | cell row column | tableprops deletetable' },
+                help: { title: 'Help', items: 'help' }
+            },
+            toolbar: 'undo redo | styleselect | bold italic | forecolor backcolor | leftalign centeralign rightalign bothalign',
+            style_formats: [
+                { title: 'Headings', items: [
+                    { title: 'Heading 1', format: 'h1' },
+                    { title: 'Heading 2', format: 'h2' },
+                    { title: 'Heading 3', format: 'h3' },
+                ]},
+                { title: 'Bold', format: 'bold' },
+                { title: 'Italic', format: 'italic' },
+                { title: 'Underline', format: 'underline' },
+                { title: 'Strikethrough', format: 'strikethrough' },
+                { title: 'Superscript', format: 'superscript' },
+                { title: 'Subscript', format: 'subscript' },
+                { title: 'Code', format: 'code' }
+            ],
             resize: 'both',
-            width: 700,
-            min_width: '5vw',
-            max_width: '50%',
+            width: '50%',
+            height: 500,
+            color_map: [
+                "000000", "customBlack",
+                "808080", "Gray",
+                "FFFFFF", "White",
+                "FF0000", "Red",
+                "FFFF00", "Yellow",
+                "008000", "Green",
+                "0000FF", "Blue"
+            ],
             plugins: [
                 'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
                 'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
                 'table emoticons template paste help'
             ],
-            fontsize_formats: '11px 12px 14vw',
-            fixed_toolbar_container: '#mytollbar'
+            invalid_styles: 'color font-size',
+            content_style: 'body{background-color: gray; color: white;}'
         }
 
+        let tiny_div = {
+            selector: '.tiny-div',
+            inline: true,
+            setup: function(editor){
+                editor.on('click', function(e){
+                    console.log('editor was clicked');
+                })
+            },
+            init_instance_callback: function(editor){
+                console.log(editor);
+            }
+        }
+
+        tinymce.init(tiny_div);
         tinymce.init(tiny_textarea);
+        tinymce.init({
+
+        })
     </script>
 </head>
 
@@ -37,6 +86,10 @@
         <textarea name="text" id="edit">
         </textarea>
     </form>
+
+    <div class='tiny-div' style="width: 500px; margin:150px 0;">
+        TinyMCE Inline true test
+    </div>
 
     <button class="custom-button">button</button>
 

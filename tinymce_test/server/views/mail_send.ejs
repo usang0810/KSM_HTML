@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tiny.cloud/1/jzjfv95g444axux6aa5sawaysg95j91kuj4dyoye8xzhmngp/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>mail send</title>
+
+    <style>
+        input{
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <form action="/nodeMail" method="POST">
+        <input type="email" name="email">
+        <textarea name="content" id="tinyText"></textarea>
+        <input type="submit" value="메일 전송">
+    </form>
+
+    <script>
+        let tinyText = {
+            selector: '#tinyText',
+            width: 700,
+            height: 400,
+            resize: 'both', // false 입력 시 사이즈 조절 불가능
+            placeholder: '이메일 내용을 입력해주세요',
+            plugins: [
+                'advlist autolink link lists charmap print preview',
+                'hr anchor pagebreak spellchecker searchreplace wordcount',
+                'visualblocks visualchars code fullscreen insertdatetime',
+                'table emoticons template paste help media nonbreaking'
+            ],
+            style_formats: [
+                { title: 'Headings', items: [
+                    { title: 'Heading 1', format: 'h1' },
+                    { title: 'Heading 2', format: 'h2' },
+                    { title: 'Heading 3', format: 'h3' },
+                ]},
+                { title: 'Bold', format: 'bold' },
+                { title: 'Italic', format: 'italic' },
+                { title: 'Underline', format: 'underline' },
+                { title: 'Strikethrough', format: 'strikethrough' },
+                { title: 'Superscript', format: 'superscript' },
+                { title: 'Subscript', format: 'subscript' },
+                { title: 'Code', format: 'code' }
+            ],
+            toolbar: 'undo redo | styleselect forecolor backcolor | ' + 
+                    'alignleft aligncenter alignright alignjustify | ' +
+                    'bullist numlist outdent indent | ' +
+                    'print preview media fullpage | emoticons',
+        }
+
+        tinymce.init(tinyText);
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tiny.cloud/1/jzjfv95g444axux6aa5sawaysg95j91kuj4dyoye8xzhmngp/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>tiny test</title>
+
+</head>
+<body>
+    <form action="#" method="POST">
+        <textarea name="text" id="edit">
+        </textarea>
+    </form>
+
+    <div id="edit-div">
+        TinyMCE Inline true test
+    </div>
+
+    <button onclick="getTinyValue();">값 가져오기</button>
+    <button onclick="setTinyValue();">값 넣기</button>
+
+    <script>
+        function getTinyValue(){
+            var tinyValue = tinymce.get("edit-div").getContent();
+            console.log(tinyValue);
+        }
+
+        function setTinyValue(){
+            var tinyValue = tinymce.get("edit-div").setContent('<h3>Test Data</h3>');
+            console.log(tinyValue);
+        }
+    </script>
+
+<script>
+    tinymce.init({
+        selector: '#edit',
+        setup: function(editor){
+            console.log(editor);
+        },
+        init_instance_callback: function(editor){
+            console.log(editor);
+        }
+    });
+
+    tinymce.init({
+        selector: '#edit-div',
+        inline: true
+    });
+</script>
+</body>
+</html>

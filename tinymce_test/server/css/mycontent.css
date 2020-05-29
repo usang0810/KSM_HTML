@@ -1,6 +1,19 @@
-p{
-    background-color: gray;
+.bgColorYellow{
+    background-color: yellow;
+}
+
+.bgColorBlue{
+    background-color: blue;
+}
+
+.bgColorRed{
+    background-color: red;
+}
+
+.textarea-body{
+    background-color: rebeccapurple;
+}
+
+.default-font{
     color: white;
-    font-weight: bold;
-    margin: 0;
 }
