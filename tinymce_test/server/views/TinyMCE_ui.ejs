@@ -10,9 +10,45 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>ui test</title>
 
+
+</head>
+
+<body>
+    <form action="/tinyPost" method="POST">
+        <textarea name="mytextarea" id="edit">
+        </textarea>
+        <input type="submit" value="submit">
+    </form>
+
+    <div class='tiny-div' style="width: 500px; margin:150px 0;">
+        TinyMCE Inline true test
+    </div>
+
     <script>
         let tiny_textarea = {
             selector: '#edit',  // change this value according to your html
+            setup: function (editor) {
+                editor.ui.registry.addSidebar('mysidebar', {
+                    tooltip: 'My sidebar',
+                    icon: 'comment',
+                    onSetup: function (api) {
+                        console.log('Render panel', api.element());
+                    },
+                    onShow: function (api) {
+                        console.log('Show panel', api.element());
+                        api.element().innerHTML = 'Hello world!';
+                    },
+                    onHide: function (api) {
+                        console.log('Hide panel', api.element());
+                    }
+                });
+            },
+            file_picker_callback: function (callback, value, meta) {
+                console.log(callback);
+                console.log(value);
+                console.log(meta);
+            },
+            draggable_modal: true,
             menubar: 'file edit view insert format tools table help',
             menu: {
                 file: { title: 'File', items: 'newdocument restoredraft | preview | print ' },
@@ -24,13 +60,15 @@
                 table: { title: 'Table', items: 'inserttable | cell row column | tableprops deletetable' },
                 help: { title: 'Help', items: 'help' }
             },
-            toolbar: 'undo redo | styleselect | bold italic | forecolor backcolor | leftalign centeralign rightalign bothalign',
+            toolbar: 'mysidebar | undo redo | styleselect | bold italic | forecolor backcolor | leftalign centeralign rightalign bothalign',
             style_formats: [
-                { title: 'Headings', items: [
-                    { title: 'Heading 1', format: 'h1' },
-                    { title: 'Heading 2', format: 'h2' },
-                    { title: 'Heading 3', format: 'h3' },
-                ]},
+                {
+                    title: 'Headings', items: [
+                        { title: 'Heading 1', format: 'h1' },
+                        { title: 'Heading 2', format: 'h2' },
+                        { title: 'Heading 3', format: 'h3' },
+                    ]
+                },
                 { title: 'Bold', format: 'bold' },
                 { title: 'Italic', format: 'italic' },
                 { title: 'Underline', format: 'underline' },
@@ -52,49 +90,19 @@
                 "0000FF", "Blue"
             ],
             plugins: [
-                'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+                'advlist autolink link image imagetools lists charmap print preview hr anchor pagebreak spellchecker',
                 'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
                 'table emoticons template paste help'
-            ],
-            invalid_styles: 'color font-size',
-            content_style: 'body{background-color: gray; color: white;}'
+            ]
         }
 
         let tiny_div = {
             selector: '.tiny-div',
-            inline: true,
-            setup: function(editor){
-                editor.on('click', function(e){
-                    console.log('editor was clicked');
-                })
-            },
-            init_instance_callback: function(editor){
-                console.log(editor);
-            }
+            inline: true
         }
 
         tinymce.init(tiny_div);
         tinymce.init(tiny_textarea);
-        tinymce.init({
-
-        })
-    </script>
-</head>
-
-<body>
-    <form action="#" method="POST">
-        <textarea name="text" id="edit">
-        </textarea>
-    </form>
-
-    <div class='tiny-div' style="width: 500px; margin:150px 0;">
-        TinyMCE Inline true test
-    </div>
-
-    <button class="custom-button">button</button>
-
-    <script>
-
     </script>
 </body>
 

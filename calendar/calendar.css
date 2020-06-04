@@ -13,16 +13,16 @@ body{
 }
 
 /* 테이블 감싸는 div */
-#calendar-wrapper{
+#sm_calendar{
     width: 100%;
     padding: 10px;
-    min-width: 1000px;
+    min-width: 800px;
     max-width: 1600px;
     margin: auto;
 }
 
 /* 테이블 */
-#calendar-table{
+#sm_calendar_table{
     position: relative;
     width: 100%;
     border-collapse: collapse;
@@ -30,59 +30,61 @@ body{
     background-color: white;
 }
 
-#calendar-table button{
+#sm_calendar_table button{
     margin: 0 5px;
 }
 
-#calendar-table td{
+#sm_calendar_table td{
     border: 1px solid lightgray;
+    padding: 0;
 }
 
-#calendar-table td:first-child{
+#sm_calendar_table td:first-child{
     border-top: 1px solid black;
 }
 
-#calendar-table tr:not(:first-child) td:nth-child(2){
+#sm_calendar_table tr:not(:first-child) td:nth-child(2){
     color: red;
 }
 
-#calendar-table tr:not(:first-child) td:nth-child(8){
+#sm_calendar_table tr:not(:first-child) td:nth-child(8){
     color: blue;
 }
 
-#calendar-table tr:nth-child(2) td{
-    text-align: center;
+#sm_calendar_table td div:first-child{
+    font-size: 14px;
+    padding: 2px;
 }
 
-#calendar-table td div{
+#sm_calendar_table td div:not(:first-child){
     width: 100%;
     text-align: left;
     color: black;
     font-size: 13px;
-    padding: 2px 0;
+    padding: 2px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     background-color: blanchedalmond;
 }
 
-#calendar-table td div span:first-child{
+/* #sm_calendar_table td div span:first-child{
     border: 1px solid gray;
     border-radius: 3px;
     background-color: lightgray;
     color: rgb(179, 37, 108);
-}
+} */
 
-#calendar-table td div span:last-child{
+/* #sm_calendar_table td div span:last-child{
     color: green;
-}
+} */
 
 /* 달력 버튼 및 셀렉박스 있는 행 */
-#manage-row{
+#sm_calendar_manage_row{
     text-align: center;
 }
 
-#todayBtn{
+#sm_calendar_todayBtn{
     position: absolute;
     left: 0;
     top: 6px;
@@ -92,59 +94,63 @@ body{
     color: black;
 }
 
-#todayBtn:hover{
+#sm_calendar_todayBtn:hover{
     cursor: pointer;
     background-color: rgb(219, 235, 186);
 }
 
-.todayBGColor{
+.sm_calendar_dayOfWeek{
+    text-align: center;
+}
+
+.sm_calendar_today{
     background-color: rgb(196, 224, 139);
 }
 
-.calBtn{
+.sm_calendar_calBtn{
     border: 0px;
     background-color: rgb(57, 124, 168);
     border-radius: 3px;
     color: white;
 }
 
-.calBtn:hover{
+.sm_calendar_calBtn:hover{
     cursor: pointer;
     background-color: rgb(100, 161, 201);
 }
 
-.date-row{
+.sm_calendar_date_row{
     vertical-align: top;
     height: 120px;
-    font-weight: bold;
 }
 
-.date:hover{
+.sm_calendar_dateTitle:hover{
     cursor: pointer;
+    background-color: aquamarine;
 }
 
-.lastNextCaption{
+.sm_calendar_lastNextCaption{
     font-weight: normal !important;
     color: gray !important;
 }
 
-.weekCount{
+.sm_calendar_weekCount{
     text-align: center;
     vertical-align: middle;
     background-color: rgb(208, 242, 255);
 }
 
-.holiday{
+.sm_calendar_holiday{
     color: red !important;
 }
 
-.moreInfo{
+.sm_calendar_moreInfo{
     background-color: white !important;
     color: black !important;
     text-align: center !important;
 }
 
-.lunarDate{
+.sm_calendar_lunarDate{
     font-size: 10px;
 }
 

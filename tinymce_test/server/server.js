@@ -2,6 +2,8 @@ const express = require('express');
 const ejs = require('ejs');
 const nodemailer = require('nodemailer');
 const router = express.Router();
+const multer = require('multer'); // 서버에서 이미지를 저장하기 위한 모듈
+const path = require('path'); // 확장자명을 알아내기위한 모듈
 
 const app = express();
 const PORT = 8000;
@@ -24,10 +26,11 @@ app.get('/', function (req, res) {
 
 app.get('/tinyTest', function (req, res) {
     res.render('TinyMCE', {});
-})
+});
 
 app.post('/tinyPost', function (req, res) {
     var textVal = req.body.mytextarea;
+    console.log("===== input data =====");
     console.log(textVal);
     res.render("tinyResult", { textVal: textVal });
 });
@@ -87,6 +90,28 @@ app.post('/nodeMail', function (req, res, next) {
         }
     });
 
+});
+
+var storage = multer.diskStorage({
+    destination : function(req, file, cb, res){
+        cb(null, 'images/upload');
+    },
+    filename: function(req, file, cb, res){
+        var name = file.fieldname + '-' + Date.now() + path.extname(file.originalname);
+        cb(null, name);
+
+        return name;
+    }
+});
+
+var upload = multer({
+    storage: storage
+});
+
+app.post('/upload', upload.single('file'), function(req, res){
+    res.json({
+        "location": "images/upload/" + req.file.filename
+    });
 });
 
 app.listen(PORT, () => {

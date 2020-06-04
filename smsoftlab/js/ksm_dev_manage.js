@@ -156,7 +156,7 @@ function getUserList(obj) {
             $("#inputUseDate").val(dateFormatter(resultUser.usedate));
             $("#inputReturnDate").val(dateFormatter(resultUser.returndate));
             $("#useRemark").val(resultUser.etc);
-            $("#devNo").text(resultUser.no);
+            $("#devNo").val(resultUser.no);
 
             userIdx = resultUser.idx;
 
@@ -210,7 +210,7 @@ function clearUserForm() {
     $("#useToggleBtn").val("등록");
     $("#clearUseBtn").hide();
     originBGColor("#userListTable");
-    $("#devNo").text("");
+    $("#devNo").val("");
     clearMachineForm();
     clearMachineList();
 
@@ -246,9 +246,9 @@ function clearMachineForm(){
 function setMachine(){
 
     var toggleVal = $("#devToggleBtn").val();
-    var no = $("#devNo").text();
+    var no = $("#devNo").val();
     if(no == ""){
-        alert("기기를 먼저 선택해주세요");
+        alert("기기를 선택 또는 입력해주세요.");
         return;
     }
 
@@ -331,7 +331,7 @@ function setMachine(){
 // 기기 목록 조회
 function getMachineList(no) {
     if(no == ""){
-        alert("기기를 선택해주세요");
+        alert("기기를 선택 또는 입력해주세요.");
         return;
     }
 
@@ -380,6 +380,7 @@ function getMachineList(no) {
 function machineDetail(obj){
     var detail = $(obj).children();
     machineIdx = $(detail[0]).text();
+
     $("#inputModel").val($(detail[1]).text());
     $("#inputCpu").val($(detail[2]).text());
     $("#inputSSD1").val($(detail[3]).text());
@@ -397,6 +398,7 @@ function machineDetail(obj){
     $("#inputStat").val($(detail[15]).text()).prop("selected", true);
     $("#inputPrice").val($(detail[16]).text());
     $("#devRemark").val($(detail[17]).text());
+
     $("#devToggleBtn").val("편집");
     $("#clearMachineBtn").show();
 
@@ -484,7 +486,7 @@ function delUser(obj){
 // param=idx, method=put
 function delMachine(obj){
     var idx = $(obj).parent().parent().children(".idx").text();
-    var no = $("#devNo").text();
+    var no = $("#devNo").val();
 
     // 사용자 히스토리 삭제 확인창
     if(confirm("'" + no + "'기기에 대한 히스토리를 삭제하시겠습니까?")){
@@ -556,7 +558,7 @@ function userReload(){
 
 // 기기관리 히스토리 목록 재조회
 function machineReload(){
-    var no = $("#devNo").text();
+    var no = $("#devNo").val();
     clearMachineForm();
     clearMachineList();
     getMachineList(no);
