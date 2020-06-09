@@ -15,11 +15,9 @@ html, body{
 /* 테이블 감싸는 div */
 #sm_calendar{
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 1000px;
+    height: 800px;
     padding: 10px;
-    min-width: 800px;
-    max-width: 1600px;
     margin: auto;
 }
 
@@ -31,6 +29,7 @@ html, body{
     border-collapse: collapse;
     table-layout: fixed;
     background-color: white;
+    min-width: 700px;
     min-height: 600px;
 }
 
@@ -47,11 +46,6 @@ html, body{
     border-top: 1px solid black;
 }
 
-#sm_calendar_table tr:nth-child(2),
-#sm_calendar_table tr:nth-child(3){
-    height: 30px;
-}
-
 #sm_calendar_table tr:not(:first-child) td:nth-child(2){
     color: red;
 }
@@ -60,29 +54,11 @@ html, body{
     color: blue;
 }
 
-#sm_calendar_table td div:first-child{
-    font-size: 14px;
-    padding: 2px;
-}
-
-/* #sm_calendar_table td div:not(:first-child){
-    width: 100%;
-    text-align: left;
-    color: black;
-    font-size: 13px;
-    padding: 2px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: blanchedalmond;
-} */
-
 .sm_calendar_dateList{
     width: 100%;
     text-align: left;
     color: black;
     font-size: 13px;
-    padding: 2px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -95,18 +71,15 @@ html, body{
     background-color: rgb(253, 212, 150);
 }
 
-/* #sm_calendar_table td div span:first-child{
-    border: 1px solid gray;
-    border-radius: 3px;
-    background-color: lightgray;
-    color: rgb(179, 37, 108);
-} */
-
-/* #sm_calendar_table td div span:last-child{
-    color: green;
-} */
+.sm_calendar_date{
+    padding: 0;
+}
 
 /* 달력 버튼 및 셀렉박스 있는 행 */
+#sm_calendar_manageWrapper{
+    height: 30px;
+}
+
 #sm_calendar_manage_row{
     text-align: center;
 }
@@ -115,7 +88,7 @@ html, body{
     position: absolute;
     left: 0;
     top: 6px;
-    border: 0px;
+    border: 1px solid black;
     border-radius: 3px;
     background-color: rgb(196, 224, 139);
     color: black;
@@ -128,6 +101,7 @@ html, body{
 
 .sm_calendar_dayOfWeek{
     text-align: center;
+    height: 30px;
 }
 
 .sm_calendar_today{
@@ -135,10 +109,10 @@ html, body{
 }
 
 .sm_calendar_calBtn{
-    border: 0px;
-    background-color: rgb(57, 124, 168);
+    border: 1px solid black;
+    background-color: rgb(208, 242, 255);
     border-radius: 3px;
-    color: white;
+    color: black;
 }
 
 .sm_calendar_calBtn:hover{
@@ -150,15 +124,38 @@ html, body{
     vertical-align: top;
 }
 
+.sm_calendar_date_row td{
+    height: inherit;
+}
+
 .sm_calendar_divWrapper{
     height: 100%;
-    overflow: hidden;
-    white-space: nowrap;
+    padding: 0;
+    font-size: 14px;
+}
+
+.sm_calendar_dateTitle,
+.sm_calendar_dateList,
+.sm_calendar_holiWrapper{
+    height: 22px;
+    padding: 2px;
 }
 
 .sm_calendar_dateTitle:hover{
     cursor: pointer;
     background-color: rgb(161, 203, 252);
+}
+
+.sm_calendar_dateTitle span:nth-child(2){
+    font-size: 12px;
+}
+
+.sm_calendar_listWrapper{
+    height: calc(100% - 22px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: nowrap;
+    position: relative;
 }
 
 .sm_calendar_lastNextCaption{
@@ -172,23 +169,10 @@ html, body{
     background-color: rgb(208, 242, 255);
 }
 
-.sm_calendar_holiday{
-    color: red !important;
-}
-
-.sm_calendar_moreInfo{
-    background-color: white !important;
-    color: black !important;
-    text-align: center !important;
-}
-
-.sm_calendar_lunarDate{
-    font-size: 10px;
-}
-
 #sm_calendar_absoluteDiv{
     position: absolute;
-    visibility: hidden;
+    /* visibility: hidden; */
+    display: none;
     width: 220px;
     height: 120px;
     left: 0px;
@@ -241,6 +225,13 @@ html, body{
     display: none;
 }
 
+.sm_calendar_holiWrapper{
+    background-color: rgb(201, 252, 247);
+}
+
+.sm_calendar_holidayColor{
+    color: red !important;
+}
 /* 
     setCalendar 부분
 */
@@ -347,7 +338,7 @@ html, body{
     padding: 5px;
 }
 
-@media screen and (max-width: 1200px){
+/* @media screen and (max-width: 1200px){
     #calendar-table td div{
         font-size: 12px;
     }
@@ -355,4 +346,4 @@ html, body{
     .date{
         font-size: 13px;
     }
-}
+} */

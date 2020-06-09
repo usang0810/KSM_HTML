@@ -1,13 +1,21 @@
+/** note
+ * var nowYear = $("#sm_calendar_inputYear option:selected").val();
+ * var nowMonth = $("#sm_calendar_inputMonth option:selected").val();
+ * 위의 두 코드 진행시 속도가 굉장히 저하됨
+ * 
+ * var nowYear = $("#sm_calendar_inputYear").val();
+ * var nowMonth = $("#sm_calendar_inputMonth").val();
+ * 위의 코드로 진행해도 selected값이 반환되고 속도가 개선됨
+ * */
+
 $(function () {
     sm_calendar.calendarInit();
 });
-
 let sm_calendar = {
     defaultApiUrl: "http://127.0.0.1:8080",
     todayTime: undefined,
-    childPopup: undefined,
-    krTime: 1000 * 60 * 60 * 9,
     listIdx: undefined,
+    krTime: 1000 * 60 * 60 * 9,
     tinyOption: {
         selector: '#sm_setCalendar_tiny',
         width: "100%",
@@ -19,11 +27,13 @@ let sm_calendar = {
             'anchor pagebreak spellchecker searchreplace wordcount'
         ],
         style_formats: [
-            { title: 'Headings', items: [
-                { title: 'Heading 1', format: 'h1' },
-                { title: 'Heading 2', format: 'h2' },
-                { title: 'Heading 3', format: 'h3' },
-            ]},
+            {
+                title: 'Headings', items: [
+                    { title: 'Heading 1', format: 'h1' },
+                    { title: 'Heading 2', format: 'h2' },
+                    { title: 'Heading 3', format: 'h3' },
+                ]
+            },
             { title: 'Bold', format: 'bold' },
             { title: 'Italic', format: 'italic' },
             { title: 'Underline', format: 'underline' },
@@ -33,9 +43,9 @@ let sm_calendar = {
             { title: 'Code', format: 'code' }
         ],
         menubar: false,
-        toolbar: 'undo redo | styleselect forecolor backcolor | ' + 
-                'alignleft aligncenter alignright alignjustify | ' +
-                'bullist numlist outdent indent'
+        toolbar: 'undo redo | styleselect forecolor backcolor | ' +
+            'alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent'
     },
     getServerTime: function () {
         var calendarObj = this;
@@ -56,7 +66,7 @@ let sm_calendar = {
             }
         });
     },
-    setElement: function(elementName, attrObj, htmlVal){
+    setElement: function (elementName, attrObj, htmlVal) {
         var element = document.createElement(elementName);
 
         if (attrObj !== undefined) {
@@ -71,63 +81,65 @@ let sm_calendar = {
 
         return element;
     },
-    getUTCTime: function(inputDate){
+    getUTCTime: function (inputDate) {
         var dateArr = inputDate.split("-");
         var dateObj = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
         return dateObj.getTime() - this.krTime;
     },
-    dateFormatter: function(inputYear, inputMonth, inputDay){
+    dateFormatter: function (inputYear, inputMonth, inputDay) {
         var strMonth = ("0" + inputMonth).slice(-2);
         var strDay = ("0" + inputDay).slice(-2);
         return inputYear + "-" + strMonth + "-" + strDay;
     },
     calendarInit: function () {
+        var UTCToKr = function (utcTime) {
+            if (utcTime === undefined || utcTime === null || utcTime == "" ||
+                (utcTime.length != 10 && utcTime.length != 13)) {
+                return "";
+            }
+
+            var numTime = Number(utcTime);
+            if (utcTime.length == 10) {
+                numTime = numTime * 1000;
+            }
+            numTime = numTime + calendarObj.krTime;
+
+            var date = new Date(numTime);
+            console.log(date);
+
+            return calendarObj.dateFormatter(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        }
         var calendarObj = this;
         calendarObj.getServerTime();
         var date = new Date(calendarObj.todayTime);
 
         var nowYear = date.getFullYear();
         var nowMonth = date.getMonth() + 1;
-        var nowDay = date.getDate();
-        // const SOLAR_HOLIDAY = [
-        //     {month: 1, day: 1, caption: "새해"},
-        //     {month: 3, day: 1, caption: "삼일절"},
-        //     {month: 5, day: 5, caption: "어린이날"},
-        //     {month: 6, day: 6, caption: "현충일"},
-        //     {month: 8, day: 15, caption: "광복절"},
-        //     {month: 10, day: 3, caption: "개천절"},
-        //     {month: 10, day: 9, caption: "한글날"},
-        //     {month: 12, day: 25, caption: "크리스마스"},
-        // ];
-        // const LUNAR_HOLIDAY = [
-        //     {month: 1, day: 1, caption: "설날"},
-        //     {month: 4, day: 8, caption: "석가탄신일"},
-        //     {month: 8, day: 15, caption: "추석"},
-        // ];
+        // var nowDay = date.getDate();
 
         // 클릭시 visible div 보이게 하는 영역
         var calDiv = document.getElementById("sm_calendar");
-        var div = calendarObj.setElement("div", {"id": "sm_calendar_absoluteDiv"});
-        var childDiv = calendarObj.setElement("div", {"id": "sm_calendar_listTitleWrapper"});
-        var span = calendarObj.setElement("span", {"id": "sm_calendar_listTitle"});
+        var div = calendarObj.setElement("div", { "id": "sm_calendar_absoluteDiv" });
+        var childDiv = calendarObj.setElement("div", { "id": "sm_calendar_listTitleWrapper" });
+        var span = calendarObj.setElement("span", { "id": "sm_calendar_listTitle" });
         childDiv.appendChild(span);
         div.appendChild(childDiv);
-        childDiv = calendarObj.setElement("div", {"id": "sm_calendar_listLocationWrapper"});
-        var span = calendarObj.setElement("span", {"id": "sm_calendar_listLocation"});
+        childDiv = calendarObj.setElement("div", { "id": "sm_calendar_listLocationWrapper" });
+        var span = calendarObj.setElement("span", { "id": "sm_calendar_listLocation" });
         childDiv.appendChild(span);
         div.appendChild(childDiv);
-        childDiv = calendarObj.setElement("div", {"id": "sm_calendar_listBtnWrapper"});
-        var btn = calendarObj.setElement("button", {"id": "sm_calendar_getListBtn"}, "보기");
+        childDiv = calendarObj.setElement("div", { "id": "sm_calendar_listBtnWrapper" });
+        var btn = calendarObj.setElement("button", { "id": "sm_calendar_getListBtn" }, "보기");
         childDiv.appendChild(btn);
-        btn = calendarObj.setElement("button", {"id": "sm_calendar_deleteListBtn"}, "삭제");
+        btn = calendarObj.setElement("button", { "id": "sm_calendar_deleteListBtn" }, "삭제");
         childDiv.appendChild(btn);
-        btn = calendarObj.setElement("button", {"id": "sm_calendar_closeListBtn"}, "닫기");
+        btn = calendarObj.setElement("button", { "id": "sm_calendar_closeListBtn" }, "닫기");
         childDiv.appendChild(btn);
         div.appendChild(childDiv);
         calDiv.appendChild(div);
 
-        var backDiv = calendarObj.setElement("div", {"id": "sm_calendar_setCalendarBack"});
-        var setDiv = calendarObj.setElement("div", {"id": "sm_setCalendar"});
+        var backDiv = calendarObj.setElement("div", { "id": "sm_calendar_setCalendarBack" });
+        var setDiv = calendarObj.setElement("div", { "id": "sm_setCalendar" });
         calDiv.appendChild(backDiv);
         calDiv.appendChild(setDiv);
         // calendarObj.insertCalendarForm();
@@ -141,28 +153,11 @@ let sm_calendar = {
 
         calendarObj.changeCalendar(nowYear, nowMonth);
 
-        function UTCToKr(utcTime){
-            if(utcTime === undefined || utcTime === null || utcTime == "" ||
-                (utcTime.length != 10 && utcTime.length != 13)){
-                return "";
-            }
-
-            var numTime = Number(utcTime);
-            if(utcTime.length == 10){
-                numTime = numTime * 1000;
-            }
-            numTime = numTime + calendarObj.krTime;
-
-            var date = new Date(numTime);
-            console.log(date);
-
-            return calendarObj.dateFormatter(date.getFullYear(), date.getMonth() + 1, date.getDate());
-        }
-
-        $("#sm_calendar_closeListBtn").on("click", function(){
-            $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
+        $("#sm_calendar_closeListBtn").on("click", function () {
+            // $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
+            $("#sm_calendar_absoluteDiv").hide();
         });
-        $("#sm_calendar_getListBtn").on("click", function(){
+        $("#sm_calendar_getListBtn").on("click", function () {
             calendarObj.getCalendarForm();
             $.ajax({
                 url: "http://127.0.0.1:8080/getCalendarInfo",
@@ -192,9 +187,10 @@ let sm_calendar = {
             });
             $("#sm_calendar_setCalendarBack").show();
             $("#sm_setCalendar").show();
+            $("#sm_calendar_absoluteDiv").hide();
         });
-        $("#sm_calendar_deleteListBtn").on("click", function(){
-            if(confirm("일정을 삭제하시겠습니까?")){
+        $("#sm_calendar_deleteListBtn").on("click", function () {
+            if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
                     url: "http://127.0.0.1:8080/deleteCalendar",
                     method: "post",
@@ -204,10 +200,9 @@ let sm_calendar = {
                     },
                     success: function (result) {
                         if (result.code == 1) {
-                            var nowYear = $("#sm_calendar_inputYear option:selected").val();
-                            var nowMonth = $("#sm_calendar_inputMonth option:selected").val();
-                            $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
-                            
+                            var nowYear = $("#sm_calendar_inputYear").val();
+                            var nowMonth = $("#sm_calendar_inputMonth").val();
+                            $("#sm_calendar_absoluteDiv").hide();
                             calendarObj.changeCalendar(nowYear, nowMonth);
                             alert("일정이 삭제되었습니다.");
                         }
@@ -219,25 +214,25 @@ let sm_calendar = {
             }
         });
     },
-    insertCalendarForm: function(nowYear, nowMonth, nowDay){
+    insertCalendarForm: function (nowYear, nowMonth, nowDay) {
         var calendarObj = this;
 
         var setDiv = document.getElementById("sm_setCalendar");
         $(setDiv).empty();
-        var div = calendarObj.setElement("div", {"id": "sm_setCalendar_btnWrapper"});
-        var btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_saveBtn"}, "저장후닫기");
+        var div = calendarObj.setElement("div", { "id": "sm_setCalendar_btnWrapper" });
+        var btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_saveBtn" }, "저장후닫기");
         div.appendChild(btn);
-        btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn"}, "닫기");
+        btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn" }, "닫기");
         div.appendChild(btn);
         setDiv.appendChild(div);
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_inputWrapper"});
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_inputWrapper" });
         childDiv = document.createElement("div");
         var table = document.createElement("table");
 
         var tr = document.createElement("tr");
         var th = calendarObj.setElement("th", {}, "위치");
         var td = document.createElement("td");
-        var input = calendarObj.setElement("input", {"type": "text", "id": "sm_setCalendar_inputLocation"});
+        var input = calendarObj.setElement("input", { "type": "text", "id": "sm_setCalendar_inputLocation" });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -246,7 +241,7 @@ let sm_calendar = {
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "제목");
         td = document.createElement("td");
-        input = calendarObj.setElement("input", {"type": "text", "id": "sm_setCalendar_inputTitle"});
+        input = calendarObj.setElement("input", { "type": "text", "id": "sm_setCalendar_inputTitle" });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -256,11 +251,11 @@ let sm_calendar = {
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "일정");
         td = document.createElement("td");
-        input = calendarObj.setElement("input", {"type": "date", "id": "sm_setCalendar_startDate", "value": convertDate});
+        input = calendarObj.setElement("input", { "type": "date", "id": "sm_setCalendar_startDate", "value": convertDate });
         td.appendChild(input);
         var span = calendarObj.setElement("span", {}, " ~ ");
         td.appendChild(span);
-        input = calendarObj.setElement("input", {"type": "date", "id": "sm_setCalendar_endDate", "value": convertDate});
+        input = calendarObj.setElement("input", { "type": "date", "id": "sm_setCalendar_endDate", "value": convertDate });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -269,49 +264,70 @@ let sm_calendar = {
         div.appendChild(childDiv);
         setDiv.appendChild(div);
 
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_textWrapper"});
-        var textarea = calendarObj.setElement("textarea", {"id": "sm_setCalendar_tiny"});
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_textWrapper" });
+        var textarea = calendarObj.setElement("textarea", { "id": "sm_setCalendar_tiny" });
         div.appendChild(textarea);
         setDiv.appendChild(div);
-
         tinymce.init(calendarObj.tinyOption);
 
-        $("#sm_setCalendar_saveBtn").on("click", function(){
+        $("#sm_setCalendar_startDate").on("change", function(){
+            var startDate = this.value;
+            var endDate = $("#sm_setCalendar_endDate").val();
+
+            var startUTCTime = calendarObj.getUTCTime(startDate);
+            var endUTCTime = calendarObj.getUTCTime(endDate);
+
+            if(startUTCTime > endUTCTime){
+                $("#sm_setCalendar_endDate").val(startDate);
+            }
+        });
+        $("#sm_setCalendar_endDate").on("change", function(){
+            var endDate = this.value;
+            var startDate = $("#sm_setCalendar_startDate").val();
+
+            var endUTCTime = calendarObj.getUTCTime(endDate);
+            var startUTCTime = calendarObj.getUTCTime(startDate);
+
+            if(startUTCTime > endUTCTime){
+                $("#sm_setCalendar_startDate").val(endDate);
+            }
+        });
+        $("#sm_setCalendar_saveBtn").on("click", function () {
             var location = $("#sm_setCalendar_inputLocation").val();
             var title = $("#sm_setCalendar_inputTitle").val();
             var startDate = $("#sm_setCalendar_startDate").val();
             var endDate = $("#sm_setCalendar_endDate").val();
             var content = tinymce.get("sm_setCalendar_tiny").getContent();
 
-            if(title == null || title ==""){
+            if (title == null || title == "") {
                 alert("제목을 입력해주세요");
                 $("#sm_setCalendar_inputTitle").focus();
                 return;
             }
 
-            if(startDate == null || startDate == ""){
+            if (startDate == null || startDate == "") {
                 alert("일정 시작일을 지정해주세요");
                 $("#sm_setCalendar_startDate").focus();
                 return;
-            }else{
+            } else {
                 startDate = calendarObj.getUTCTime(startDate);
             }
 
-            if(endDate == null || endDate == ""){
+            if (endDate == null || endDate == "") {
                 alert("일정 마감일을 지정해주세요");
                 $("#sm_setCalendar_endDate").focus();
                 return;
-            }else{
+            } else {
                 endDate = calendarObj.getUTCTime(endDate);
             }
 
-            if(startDate > endDate){
+            if (startDate > endDate) {
                 alert("일정 시작일이 마감일보다 늦은 날짜일 수 없습니다");
                 $("#sm_setCalendar_startDate").focus();
                 return;
             }
 
-            if(content.length > 255){
+            if (content.length > 255) {
                 alert("본문 내용은 255byte를 초과할 수 없습니다.");
                 return;
             }
@@ -329,10 +345,9 @@ let sm_calendar = {
                 },
                 success: function (result) {
                     if (result.code == 1) {
-                        $("#sm_setCalendar_inputLocation").val("");
-                        $("#sm_setCalendar_inputTitle").val("");
-                        tinymce.get("sm_setCalendar_tiny").setContent("");
-                        
+                        tinymce.remove("#sm_setCalendar_tiny");
+
+                        $("#sm_calendar_absoluteDiv").hide();
                         $("#sm_calendar_setCalendarBack").hide();
                         $("#sm_setCalendar").hide();
                         calendarObj.changeCalendar(nowYear, nowMonth);
@@ -343,27 +358,28 @@ let sm_calendar = {
                     console.log(err);
                 }
             });
-            
+
         });
-        $("#sm_setCalendar_closeBtn").on("click", function(){
+        $("#sm_setCalendar_closeBtn").on("click", function () {
+            tinymce.remove("#sm_setCalendar_tiny");
             $("#sm_calendar_setCalendarBack").hide();
             $("#sm_setCalendar").hide();
         });
     },
-    getCalendarForm: function(){
+    getCalendarForm: function () {
         var calendarObj = this;
 
         var setDiv = document.getElementById("sm_setCalendar");
         $(setDiv).empty();
-        var div = calendarObj.setElement("div", {"id": "sm_setCalendar_btnWrapper"});
-        var btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_updateBtn"}, "수정");
+        var div = calendarObj.setElement("div", { "id": "sm_setCalendar_btnWrapper" });
+        var btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_updateBtn" }, "수정");
         div.appendChild(btn);
-        var btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_deleteBtn"}, "삭제");
+        var btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_deleteBtn" }, "삭제");
         div.appendChild(btn);
-        btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn"}, "닫기");
+        btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn" }, "닫기");
         div.appendChild(btn);
         setDiv.appendChild(div);
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_detailWrapper"});
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_detailWrapper" });
         childDiv = document.createElement("div");
         var table = document.createElement("table");
 
@@ -372,7 +388,7 @@ let sm_calendar = {
         var col = document.createElement("col");
         col.style.width = "80px";
         colgroup.appendChild(col);
-        
+
         col = document.createElement("col");
         col.style.width = "calc((100% - 160px) / 2)";
         colgroup.appendChild(col);
@@ -388,8 +404,8 @@ let sm_calendar = {
 
         var tr = document.createElement("tr");
         var th = calendarObj.setElement("th", {}, "제목");
-        var td = calendarObj.setElement("td", {"colspan": "3"});
-        var span = calendarObj.setElement("span", {"id": "sm_setCalendar_detailTitle"});
+        var td = calendarObj.setElement("td", { "colspan": "3" });
+        var span = calendarObj.setElement("span", { "id": "sm_setCalendar_detailTitle" });
         td.appendChild(span);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -397,8 +413,8 @@ let sm_calendar = {
 
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "위치");
-        td = calendarObj.setElement("td", {"colspan": "3"});
-        span = calendarObj.setElement("span", {"id": "sm_setCalendar_detailLocation"});
+        td = calendarObj.setElement("td", { "colspan": "3" });
+        span = calendarObj.setElement("span", { "id": "sm_setCalendar_detailLocation" });
         td.appendChild(span);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -407,26 +423,26 @@ let sm_calendar = {
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "수정일");
         td = calendarObj.setElement("td");
-        span = calendarObj.setElement("span", {"id": "sm_setCalendar_updateDate"});
+        span = calendarObj.setElement("span", { "id": "sm_setCalendar_updateDate" });
         td.appendChild(span);
         tr.appendChild(th);
         tr.appendChild(td);
         th = calendarObj.setElement("th", {}, "작성일");
         td = calendarObj.setElement("td");
-        span = calendarObj.setElement("span", {"id": "sm_setCalendar_writeDate"});
+        span = calendarObj.setElement("span", { "id": "sm_setCalendar_writeDate" });
         td.appendChild(span);
         tr.appendChild(th);
         tr.appendChild(td);
         table.appendChild(tr);
-        
+
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "기간");
-        td = calendarObj.setElement("td", {"colspan": "3"});
-        span = calendarObj.setElement("span", {"id": "sm_setCalendar_startDate"});
+        td = calendarObj.setElement("td", { "colspan": "3" });
+        span = calendarObj.setElement("span", { "id": "sm_setCalendar_startDate" });
         td.appendChild(span);
         span = calendarObj.setElement("span", {}, " ~ ");
         td.appendChild(span);
-        span = calendarObj.setElement("span", {"id": "sm_setCalendar_endDate"});
+        span = calendarObj.setElement("span", { "id": "sm_setCalendar_endDate" });
         td.appendChild(span);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -435,17 +451,17 @@ let sm_calendar = {
         div.appendChild(childDiv);
         setDiv.appendChild(div);
 
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_contentWrapper"});
-        childDiv = calendarObj.setElement("div", {"id": "sm_setCalendar_content"}, "test");
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_contentWrapper" });
+        childDiv = calendarObj.setElement("div", { "id": "sm_setCalendar_content" }, "test");
         div.appendChild(childDiv);
 
         setDiv.appendChild(div);
 
-        $("#sm_setCalendar_closeBtn").on("click", function(){
+        $("#sm_setCalendar_closeBtn").on("click", function () {
             $("#sm_calendar_setCalendarBack").hide();
             $("#sm_setCalendar").hide();
         });
-        $("#sm_setCalendar_updateBtn").on("click", function(){
+        $("#sm_setCalendar_updateBtn").on("click", function () {
             var title = $("#sm_setCalendar_detailTitle").text();
             var location = $("#sm_setCalendar_detailLocation").text();
             var startDate = $("#sm_setCalendar_startDate").text();
@@ -461,8 +477,8 @@ let sm_calendar = {
 
             calendarObj.updateCalendarForm(obj);
         });
-        $("#sm_setCalendar_deleteBtn").on("click", function(){
-            if(confirm("일정을 삭제하시겠습니까?")){
+        $("#sm_setCalendar_deleteBtn").on("click", function () {
+            if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
                     url: "http://127.0.0.1:8080/deleteCalendar",
                     method: "post",
@@ -472,6 +488,14 @@ let sm_calendar = {
                     },
                     success: function (result) {
                         if (result.code == 1) {
+                            var nowYear = $("#sm_calendar_inputYear").val();
+                            var nowMonth = $("#sm_calendar_inputMonth").val();
+                            tinymce.remove("#sm_setCalendar_tiny");
+
+                            $("#sm_calendar_absoluteDiv").hide();
+                            $("#sm_calendar_setCalendarBack").hide();
+                            $("#sm_setCalendar").hide();
+                            calendarObj.changeCalendar(nowYear, nowMonth);
                             alert("일정이 삭제되었습니다.");
                         }
                     },
@@ -479,37 +503,31 @@ let sm_calendar = {
                         console.log(err);
                     },
                 });
-                var nowYear = $("#sm_calendar_inputYear option:selected").val();
-                var nowMonth = $("#sm_calendar_inputMonth option:selected").val();
-                $("#sm_calendar_setCalendarBack").hide();
-                $("#sm_setCalendar").hide();
-                $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
                 
-                calendarObj.changeCalendar(nowYear, nowMonth);
             }
         });
     },
-    updateCalendarForm: function(obj){
+    updateCalendarForm: function (obj) {
         var calendarObj = this;
 
         var setDiv = document.getElementById("sm_setCalendar");
         $(setDiv).empty();
-        var div = calendarObj.setElement("div", {"id": "sm_setCalendar_btnWrapper"});
-        var btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_updateBtn"}, "수정후닫기");
+        var div = calendarObj.setElement("div", { "id": "sm_setCalendar_btnWrapper" });
+        var btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_updateBtn" }, "수정후닫기");
         div.appendChild(btn);
-        var btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_deleteBtn"}, "삭제");
+        var btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_deleteBtn" }, "삭제");
         div.appendChild(btn);
-        btn = calendarObj.setElement("button", {"class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn"}, "닫기");
+        btn = calendarObj.setElement("button", { "class": "sm_setCalendar_btn", "id": "sm_setCalendar_closeBtn" }, "닫기");
         div.appendChild(btn);
         setDiv.appendChild(div);
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_inputWrapper"});
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_inputWrapper" });
         childDiv = document.createElement("div");
         var table = document.createElement("table");
 
         var tr = document.createElement("tr");
         var th = calendarObj.setElement("th", {}, "위치");
         var td = document.createElement("td");
-        var input = calendarObj.setElement("input", {"type": "text", "id": "sm_setCalendar_inputLocation", "value": obj.location});
+        var input = calendarObj.setElement("input", { "type": "text", "id": "sm_setCalendar_inputLocation", "value": obj.location });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -518,7 +536,7 @@ let sm_calendar = {
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "제목");
         td = document.createElement("td");
-        input = calendarObj.setElement("input", {"type": "text", "id": "sm_setCalendar_inputTitle", "value": obj.title});
+        input = calendarObj.setElement("input", { "type": "text", "id": "sm_setCalendar_inputTitle", "value": obj.title });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -527,11 +545,11 @@ let sm_calendar = {
         tr = document.createElement("tr");
         th = calendarObj.setElement("th", {}, "일정");
         td = document.createElement("td");
-        input = calendarObj.setElement("input", {"type": "date", "id": "sm_setCalendar_startDate", "value": obj.startDate});
+        input = calendarObj.setElement("input", { "type": "date", "id": "sm_setCalendar_startDate", "value": obj.startDate });
         td.appendChild(input);
         input = calendarObj.setElement("span", {}, " ~ ");
         td.appendChild(input);
-        input = calendarObj.setElement("input", {"type": "date", "id": "sm_setCalendar_endDate", "value": obj.endDate});
+        input = calendarObj.setElement("input", { "type": "date", "id": "sm_setCalendar_endDate", "value": obj.endDate });
         td.appendChild(input);
         tr.appendChild(th);
         tr.appendChild(td);
@@ -541,19 +559,42 @@ let sm_calendar = {
         setDiv.appendChild(div);
 
         console.log(obj.content);
-        div = calendarObj.setElement("div", {"id": "sm_setCalendar_textWrapper"});
-        var textarea = calendarObj.setElement("textarea", {"id": "sm_setCalendar_tiny"}, obj.content);
+        div = calendarObj.setElement("div", { "id": "sm_setCalendar_textWrapper" });
+        var textarea = calendarObj.setElement("textarea", { "id": "sm_setCalendar_tiny" }, obj.content);
         div.appendChild(textarea);
         setDiv.appendChild(div);
 
         tinymce.init(calendarObj.tinyOption);
 
-        $("#sm_setCalendar_closeBtn").on("click", function(){
+        $("#sm_setCalendar_startDate").on("change", function(){
+            var startDate = this.value;
+            var endDate = $("#sm_setCalendar_endDate").val();
+
+            var startUTCTime = calendarObj.getUTCTime(startDate);
+            var endUTCTime = calendarObj.getUTCTime(endDate);
+
+            if(startUTCTime > endUTCTime){
+                $("#sm_setCalendar_endDate").val(startDate);
+            }
+        });
+        $("#sm_setCalendar_endDate").on("change", function(){
+            var endDate = this.value;
+            var startDate = $("#sm_setCalendar_startDate").val();
+
+            var endUTCTime = calendarObj.getUTCTime(endDate);
+            var startUTCTime = calendarObj.getUTCTime(startDate);
+
+            if(startUTCTime > endUTCTime){
+                $("#sm_setCalendar_startDate").val(endDate);
+            }
+        });
+        $("#sm_setCalendar_closeBtn").on("click", function () {
+            tinymce.remove("#sm_setCalendar_tiny");
             $("#sm_calendar_setCalendarBack").hide();
             $("#sm_setCalendar").hide();
         });
-        $("#sm_setCalendar_deleteBtn").on("click", function(){
-            if(confirm("일정을 삭제하시겠습니까?")){
+        $("#sm_setCalendar_deleteBtn").on("click", function () {
+            if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
                     url: "http://127.0.0.1:8080/deleteCalendar",
                     method: "post",
@@ -563,6 +604,14 @@ let sm_calendar = {
                     },
                     success: function (result) {
                         if (result.code == 1) {
+                            var nowYear = $("#sm_calendar_inputYear").val();
+                            var nowMonth = $("#sm_calendar_inputMonth").val();
+                            tinymce.remove("#sm_setCalendar_tiny");
+
+                            $("#sm_calendar_absoluteDiv").hide();
+                            $("#sm_calendar_setCalendarBack").hide();
+                            $("#sm_setCalendar").hide();
+                            calendarObj.changeCalendar(nowYear, nowMonth);
                             alert("일정이 삭제되었습니다.");
                         }
                     },
@@ -570,59 +619,52 @@ let sm_calendar = {
                         console.log(err);
                     },
                 });
-                var nowYear = $("#sm_calendar_inputYear option:selected").val();
-                var nowMonth = $("#sm_calendar_inputMonth option:selected").val();
-                $("#sm_calendar_setCalendarBack").hide();
-                $("#sm_setCalendar").hide();
-                $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
-                
-                calendarObj.changeCalendar(nowYear, nowMonth);
             }
         });
-        $("#sm_setCalendar_updateBtn").on("click", function(){
+        $("#sm_setCalendar_updateBtn").on("click", function () {
             var location = $("#sm_setCalendar_inputLocation").val();
             var title = $("#sm_setCalendar_inputTitle").val();
             var startDate = $("#sm_setCalendar_startDate").val();
             var endDate = $("#sm_setCalendar_endDate").val();
             var content = tinymce.get("sm_setCalendar_tiny").getContent();
-            if(content === undefined || content === null || content == ""){
+            if (content === undefined || content === null || content == "") {
                 content = $("#sm_setCalendar_tiny").val();
             }
 
-            if(title == null || title ==""){
+            if (title == null || title == "") {
                 alert("제목을 입력해주세요");
                 $("#sm_setCalendar_inputTitle").focus();
                 return;
             }
 
-            if(startDate == null || startDate == ""){
+            if (startDate == null || startDate == "") {
                 alert("일정 시작일을 지정해주세요");
                 $("#sm_setCalendar_startDate").focus();
                 return;
-            }else{
+            } else {
                 startDate = calendarObj.getUTCTime(startDate);
             }
 
-            if(endDate == null || endDate == ""){
+            if (endDate == null || endDate == "") {
                 alert("일정 마감일을 지정해주세요");
                 $("#sm_setCalendar_endDate").focus();
                 return;
-            }else{
+            } else {
                 endDate = calendarObj.getUTCTime(endDate);
             }
 
-            if(startDate > endDate){
+            if (startDate > endDate) {
                 alert("일정 시작일이 마감일보다 늦은 날짜일 수 없습니다");
                 $("#sm_setCalendar_startDate").focus();
                 return;
             }
 
-            if(content.length > 255){
+            if (content.length > 255) {
                 alert("본문 내용은 255byte를 초과할 수 없습니다.");
                 return;
             }
 
-            if(confirm("일정을 수정하시겠습니까?")){
+            if (confirm("일정을 수정하시겠습니까?")) {
                 $.ajax({
                     url: "http://127.0.0.1:8080/updateCalendar",
                     method: "post",
@@ -637,13 +679,11 @@ let sm_calendar = {
                     },
                     success: function (result) {
                         if (result.code == 1) {
-                            $("#sm_setCalendar_inputLocation").val("");
-                            $("#sm_setCalendar_inputTitle").val("");
-                            tinymce.get("sm_setCalendar_tiny").setContent("");
+                            var nowYear = $("#sm_calendar_inputYear").val();
+                            var nowMonth = $("#sm_calendar_inputMonth").val();
+                            tinymce.remove("#sm_setCalendar_tiny");
 
-                            var nowYear = $("#sm_calendar_inputYear option:selected").val();
-                            var nowMonth = $("#sm_calendar_inputMonth option:selected").val();
-    
+                            $("#sm_calendar_absoluteDiv").hide();
                             $("#sm_calendar_setCalendarBack").hide();
                             $("#sm_setCalendar").hide();
                             calendarObj.changeCalendar(nowYear, nowMonth);
@@ -657,10 +697,10 @@ let sm_calendar = {
             }
         });
     },
-    changeCalendar: function(nowYear, nowMonth){
-        function getCalendarList(endDay){
-            var startUTCTime = new Date(nowYear, nowMonth-1, 1).getTime() - calendarObj.krTime;
-            var endUTCTime = new Date(nowYear, nowMonth-1, endDay).getTime() - calendarObj.krTime;
+    changeCalendar: function (nowYear, nowMonth) {
+        var getCalendarList = function (endDay) {
+            var startUTCTime = new Date(nowYear, nowMonth - 1, 1).getTime() - calendarObj.krTime;
+            var endUTCTime = new Date(nowYear, nowMonth - 1, endDay).getTime() - calendarObj.krTime;
 
             var returnValue;
             $.ajax({
@@ -674,7 +714,7 @@ let sm_calendar = {
                 },
                 success: function (result) {
                     if (result.code == 1) {
-                        for(var i=0; i<result.list.length; i++){
+                        for (var i = 0; i < result.list.length; i++) {
                             var temp = new Date(Number(result.list[i].startDate) + calendarObj.krTime);
                             result.list[i].startDate = {
                                 year: temp.getFullYear(),
@@ -699,8 +739,53 @@ let sm_calendar = {
             });
             return returnValue;
         }
+        // 달력 변환 함수
+        var change = function(obj){
+            var year = $("#sm_calendar_inputYear").val();
+            var month = $("#sm_calendar_inputMonth").val();
+
+            if (obj !== undefined) {
+                var btnVal = $(obj).text();
+
+                if (btnVal == '<') {
+                    if (month == 1) {
+                        month = 12;
+                        year--;
+                    } else {
+                        month--;
+                    }
+
+                } else if (btnVal == '>') {
+                    if (month == 12) {
+                        month = 1;
+                        year++;
+                    } else {
+                        month++;
+                    }
+
+                } else if (btnVal == '<<') {
+                    year--;
+
+                } else if (btnVal == '>>') {
+                    year++;
+                }
+            }
+            // $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
+            $("#sm_calendar_absoluteDiv").hide();
+            calendarObj.changeCalendar(Number(year), Number(month));
+        }
 
         const DAY_OF_WEEK = ['', '일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+        const SOLAR_HOLIDAY = [
+            { month: 1, day: 1, caption: "새해" },
+            { month: 3, day: 1, caption: "삼일절" },
+            { month: 5, day: 5, caption: "어린이날" },
+            { month: 6, day: 6, caption: "현충일" },
+            { month: 8, day: 15, caption: "광복절" },
+            { month: 10, day: 3, caption: "개천절" },
+            { month: 10, day: 9, caption: "한글날" },
+            { month: 12, day: 25, caption: "크리스마스" },
+        ];
         var calendarObj = this;
         var today = new Date(calendarObj.todayTime);
         var todayYear = today.getFullYear();
@@ -723,7 +808,7 @@ let sm_calendar = {
         table.appendChild(colgroup);
 
         // 버튼 행 생성
-        var tr = document.createElement("tr");
+        var tr = calendarObj.setElement("tr", { "id": "sm_calendar_manageWrapper" });
         var td = calendarObj.setElement("td", { "colspan": "8", "id": "sm_calendar_manage_row" });
         btn = calendarObj.setElement("button", { "id": "sm_calendar_todayBtn" }, "Today");
         td.appendChild(btn);
@@ -775,7 +860,7 @@ let sm_calendar = {
         var lastDay = new Date(nowYear, nowMonth, 0);
         var nowLastDay = lastDay.getDate();
         var firstDOW = firstDay.getDay();
-        
+
         var calendarList = getCalendarList(nowLastDay);
 
         var weekCount = 1;
@@ -791,11 +876,11 @@ let sm_calendar = {
             var beforeMonth = new Date(nowYear, nowMonth - 1, 0);
             var lastWeekDay = beforeMonth.getDate();
             var lastWeekhDOW = beforeMonth.getDay();
-            
+
             for (var i = lastWeekhDOW; i >= 0; i--) {
                 td = calendarObj.setElement("td", { "class": "sm_calendar_lastNextCaption" });
-                divWrapper = calendarObj.setElement("div", {"class": "sm_calendar_divWrapper"});
-                div = calendarObj.setElement("div", {}, lastWeekDay - i);
+                divWrapper = calendarObj.setElement("div", { "class": "sm_calendar_divWrapper" });
+                div = calendarObj.setElement("div", {"class": "sm_calendar_dateTitle"}, lastWeekDay - i);
                 divWrapper.appendChild(div);
                 td.appendChild(divWrapper);
                 tr.appendChild(td);
@@ -805,48 +890,91 @@ let sm_calendar = {
         // 달력 표시
         for (var i = 1; i <= nowLastDay; i++) {
             var lunDate = calendarObj.solarToLunar(nowYear, nowMonth, i);
+            var lunCaption = "";
+            // 음력 배열의 범위를 초과하면 공백 반환
+            if (lunDate != undefined && lunDate != "" && lunDate != null)
+                lunCaption = (lunDate.leapMonth ? " (윤" : " (") + lunDate.month + "." + lunDate.day + ")";
+
+            var listWrapper = calendarObj.setElement("div", { "class": "sm_calendar_listWrapper" });
+            var isHoli = false;
+            var lunHoliCatpion = "";
+            var solHoliCatpion = "";
+            // 음력 공휴일 체크
+            if (lunDate.isHoli) {
+                isHoli = true;
+                lunHoliCatpion = lunDate.caption;
+            }
+
+            // 양력 공휴일 체크
+            for (var j = 0; j < SOLAR_HOLIDAY.length; j++) {
+                if (nowMonth == SOLAR_HOLIDAY[j].month && i == SOLAR_HOLIDAY[j].day) {
+                    isHoli = true;
+                    solHoliCatpion = SOLAR_HOLIDAY[j].caption;
+                }
+            }
 
             if (todayYear == nowYear && todayMonth == nowMonth && todayDay == i)
                 td = calendarObj.setElement("td", { "class": "sm_calendar_date sm_calendar_today" });
             else
                 td = calendarObj.setElement("td", { "class": "sm_calendar_date" });
 
-            divWrapper = calendarObj.setElement("div", {"class": "sm_calendar_divWrapper"});
-            div = calendarObj.setElement("div", { "class": "sm_calendar_dateTitle" });
+            divWrapper = calendarObj.setElement("div", { "class": "sm_calendar_divWrapper" });
+            if (isHoli)
+                div = calendarObj.setElement("div", { "class": "sm_calendar_dateTitle sm_calendar_holidayColor" });
+            else
+                div = calendarObj.setElement("div", { "class": "sm_calendar_dateTitle" });
+
             span = calendarObj.setElement("span", {}, i);
             div.appendChild(span);
-            span = calendarObj.setElement("span", {}, lunDate);
+            span = calendarObj.setElement("span", {}, lunCaption);
             div.appendChild(span);
             divWrapper.appendChild(div);
 
-            for(var j=0; j<calendarList.length; j++){
-                if( (calendarList[j].endDate.year > nowYear &&
+            if (isHoli) {
+                if (lunHoliCatpion != "") {
+                    div = calendarObj.setElement("div", { "class": "sm_calendar_holiWrapper sm_calendar_holidayColor" });
+                    span = calendarObj.setElement("span", {}, lunHoliCatpion);
+                    div.appendChild(span);
+                    listWrapper.appendChild(div);
+                }
+                if (solHoliCatpion != "") {
+                    div = calendarObj.setElement("div", { "class": "sm_calendar_holiWrapper sm_calendar_holidayColor" });
+                    span = calendarObj.setElement("span", {}, solHoliCatpion);
+                    div.appendChild(span);
+                    listWrapper.appendChild(div);
+                }
+            }
+
+            // 해당 달력에 일정이 있을경우 표시
+            for (var j = 0; j < calendarList.length; j++) {
+                if ((calendarList[j].endDate.year > nowYear &&
                     calendarList[j].startDate.day <= i) ||
 
                     (calendarList[j].endDate.month > nowMonth &&
-                    calendarList[j].startDate.day <= i) ||
+                        calendarList[j].startDate.day <= i) ||
 
                     (calendarList[j].startDate.month == nowMonth &&
-                    calendarList[j].endDate.month == nowMonth &&
-                    calendarList[j].startDate.day <= i &&
-                    calendarList[j].endDate.day >= i) ||
+                        calendarList[j].endDate.month == nowMonth &&
+                        calendarList[j].startDate.day <= i &&
+                        calendarList[j].endDate.day >= i) ||
 
                     (calendarList[j].startDate.month < nowMonth &&
-                    calendarList[j].endDate.month == nowMonth &&
-                    calendarList[j].endDate.day >= i)){
+                        calendarList[j].endDate.month == nowMonth &&
+                        calendarList[j].endDate.day >= i)) {
 
-                    div = calendarObj.setElement("div", {"class": "sm_calendar_dateList"});
-                    var input = calendarObj.setElement("input", {"type": "hidden", "value": calendarList[j].idx, "class": "sm_calendar_listIdx"});
+                    div = calendarObj.setElement("div", { "class": "sm_calendar_dateList" });
+                    var input = calendarObj.setElement("input", { "type": "hidden", "value": calendarList[j].idx, "class": "sm_calendar_listIdx" });
                     div.appendChild(input);
-                    span = calendarObj.setElement("span", {"class": "sm_calendar_listTitle"}, calendarList[j].title);
+                    span = calendarObj.setElement("span", { "class": "sm_calendar_listTitle" }, calendarList[j].title);
                     div.appendChild(span);
-                    if(calendarList[j].location != ""){
-                        span = calendarObj.setElement("span", {"class": "sm_calendar_listLocation"}, " (" + calendarList[j].location + ")");
+                    if (calendarList[j].location != "") {
+                        span = calendarObj.setElement("span", { "class": "sm_calendar_listLocation" }, " (" + calendarList[j].location + ")");
                         div.appendChild(span);
                     }
-                    divWrapper.appendChild(div);
+                    listWrapper.appendChild(div);
                 }
             }
+            divWrapper.appendChild(listWrapper);
             td.appendChild(divWrapper);
             tr.appendChild(td);
 
@@ -871,8 +999,8 @@ let sm_calendar = {
             var nextWeekFirstDay = 1;
             for (var i = nextWeekDOW; i <= 6; i++) {
                 td = calendarObj.setElement("td", { "class": "sm_calendar_lastNextCaption" });
-                div = calendarObj.setElement("div", {}, nextWeekFirstDay++);
-                divWrapper = calendarObj.setElement("div", {"class": "sm_calendar_divWrapper"});
+                div = calendarObj.setElement("div", {"class": "sm_calendar_dateTitle"}, nextWeekFirstDay++);
+                divWrapper = calendarObj.setElement("div", { "class": "sm_calendar_divWrapper" });
                 divWrapper.appendChild(div);
                 td.appendChild(divWrapper);
                 tr.appendChild(td);
@@ -880,40 +1008,29 @@ let sm_calendar = {
         }
         table.appendChild(tr);
 
-        // 달력 변환 함수
-        function change(obj) {
-            var year = $("#sm_calendar_inputYear").val();
-            var month = $("#sm_calendar_inputMonth").val();
-
-            if (obj !== undefined) {
-                var btnVal = $(obj).text();
-
-                if (btnVal == '<') {
-                    if (month == 1) {
-                        month = 12;
-                        year--;
-                    } else {
-                        month--;
-                    }
-
-                } else if (btnVal == '>') {
-                    if (month == 12 ) {
-                        month = 1;
-                        year++;
-                    } else {
-                        month++;
-                    }
-
-                } else if (btnVal == '<<') {
-                    year--;
-
-                } else if (btnVal == '>>') {
-                    year++;
-                }
-            }
-            $("#sm_calendar_absoluteDiv").css("visibility", "hidden");
-            calendarObj.changeCalendar(Number(year), Number(month));
+        // 주차가 5개이거나 6개일 경우의 높이값 조절
+        var dateRowCount = $("#sm_calendar_table .sm_calendar_date_row").length;
+        var tableHeight = Number($("#sm_calendar_table").css("height").replace("px", ""));
+        var divHeight = tableHeight - 80;
+        if (dateRowCount == 6) {
+            var divHeight = divHeight / 6;
+        } else {
+            var divHeight = divHeight / 5;
         }
+        $(".sm_calendar_divWrapper").css("height", divHeight + "px");
+
+        // 브라우저 창 크기조절시 이벤트
+        window.addEventListener("resize", function(){
+            var dateRowCount = $("#sm_calendar_table .sm_calendar_date_row").length;
+            var tableHeight = Number($("#sm_calendar_table").css("height").replace("px", ""));
+            var divHeight = tableHeight - 80;
+            if (dateRowCount == 6) {
+                var divHeight = divHeight / 6;
+            } else {
+                var divHeight = divHeight / 5;
+            }
+            $(".sm_calendar_divWrapper").css("height", divHeight + "px");
+        });
 
         $(".sm_calendar_calBtn").on("click", function () {
             change(this);
@@ -924,7 +1041,7 @@ let sm_calendar = {
         $("#sm_calendar_inputMonth").on("change", function () {
             change();
         });
-        $("#sm_calendar_todayBtn").on("click", function(){
+        $("#sm_calendar_todayBtn").on("click", function () {
             var date = new Date(calendarObj.todayTime);
             calendarObj.changeCalendar(date.getFullYear(), date.getMonth() + 1);
         });
@@ -935,7 +1052,7 @@ let sm_calendar = {
             $("#sm_calendar_setCalendarBack").show();
             $("#sm_setCalendar").show();
         });
-        $(".sm_calendar_dateList").on("click", function(event){
+        $(".sm_calendar_dateList").on("click", function (event) {
             var obj = this;
             var title = $(obj).children(".sm_calendar_listTitle").text();
             var location = $(obj).children(".sm_calendar_listLocation").text();
@@ -949,55 +1066,35 @@ let sm_calendar = {
             $("#sm_calendar_listTitle").text(title);
             $("#sm_calendar_listLocation").text(location);
 
-            if(calWidth < event.clientX - left + abWidth){
+            if (calWidth < event.clientX - left + abWidth) {
                 $("#sm_calendar_absoluteDiv").css("left", event.clientX - left - abWidth);
-            }else{
+            } else {
                 $("#sm_calendar_absoluteDiv").css("left", event.clientX - left);
             }
 
-            if(calHeight < event.clientY - top + abHeight){
+            if (calHeight < event.clientY - top + abHeight) {
                 $("#sm_calendar_absoluteDiv").css("top", event.clientY - top - abHeight);
-            }else{
+            } else {
                 $("#sm_calendar_absoluteDiv").css("top", event.clientY - top);
             }
 
-            $("#sm_calendar_absoluteDiv").css("visibility", "visible");
+            // $("#sm_calendar_absoluteDiv").css("visibility", "visible");
+            $("#sm_calendar_absoluteDiv").show();
         });
     },
     lunarCalc: function (year, month, day, type, leapmonth) {
-        const LAST_LUNAR_YEAR = 1969;
+        const LAST_LUNAR_YEAR = 1999;
+        var LUNAR_HOLIDAY = [
+            { month: 12, day: 0, caption: "설날" }, // 음력 12월의 마지막날은 유동적이기 때문에 0으로 초기화
+            { month: 1, day: 1, caption: "설날" },
+            { month: 1, day: 2, caption: "설날" },
+            { month: 4, day: 8, caption: "석가탄신일" },
+            { month: 8, day: 14, caption: "추석" },
+            { month: 8, day: 15, caption: "추석" },
+            { month: 8, day: 16, caption: "추석" },
+        ];
         var lunarMonthTable = [
-            [1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1],   /* 양력 1970년 1월은 음력 1969년에 있음 그래서 시작년도는 1969년*/
-            [2, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2],
-            [1, 2, 1, 1, 5, 2, 1, 2, 2, 2, 1, 2],   /* 1971 */
-            [1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1],
-            [2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2, 1],
-            [2, 2, 1, 5, 1, 2, 1, 1, 2, 2, 1, 2],
-            [2, 2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2],
-            [2, 2, 1, 2, 1, 2, 1, 5, 2, 1, 1, 2],
-            [2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1],
-            [2, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1],
-            [2, 1, 1, 2, 1, 6, 1, 2, 2, 1, 2, 1],
-            [2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2],
-            [1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 2],   /* 1981 */
-            [2, 1, 2, 3, 2, 1, 1, 2, 2, 1, 2, 2],
-            [2, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2],
-            [2, 1, 2, 2, 1, 1, 2, 1, 1, 5, 2, 2],
-            [1, 2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2],
-            [1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1, 1],
-            [2, 1, 2, 2, 1, 5, 2, 2, 1, 2, 1, 2],
-            [1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1],
-            [2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2],
-            [1, 2, 1, 1, 5, 1, 2, 1, 2, 2, 2, 2],
-            [1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2],   /* 1991 */
-            [1, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2],
-            [1, 2, 5, 2, 1, 2, 1, 1, 2, 1, 2, 1],
-            [2, 2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2],
-            [1, 2, 2, 1, 2, 2, 1, 5, 2, 1, 1, 2],
-            [1, 2, 1, 2, 2, 1, 2, 1, 2, 2, 1, 2],
-            [1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1],
-            [2, 1, 1, 2, 3, 2, 2, 1, 2, 2, 2, 1],
-            [2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],
+            [2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1],   /* 양력 2000년 1월은 음력 1999년에 있음 그래서 시작년도는 1999년 */
             [2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1],
             [2, 2, 2, 3, 2, 1, 1, 2, 1, 2, 1, 2],   /* 2001 */
             [2, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1],
@@ -1043,14 +1140,6 @@ let sm_calendar = {
             [1, 5, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2],
             [1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 2]];
 
-        // 음력 계산을 위한 객체
-        function myDate(year, month, day, leapMonth) {
-            this.year = year;
-            this.month = month;
-            this.day = day;
-            this.leapMonth = leapMonth;
-        }
-
         var solYear, solMonth, solDay;
         var lunYear, lunMonth, lunDay;
 
@@ -1062,14 +1151,14 @@ let sm_calendar = {
         var solMonthDay = [31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         /* range check */
-        if (year < 1970 || year > 2040) {
-            // alert('1970년부터 2040년까지만 지원합니다');
+        if (year < 2000 || year > 2040) {
+            // alert('2000년부터 2040년까지만 지원합니다');
             return "";
         }
 
         /* 속도 개선을 위해 기준 일자를 여러개로 한다 */
         if (year >= 2030) {
-            /* 기준일자 양력 2000년 1월 1일 (음력 1999년 11월 25일) */
+            /* 기준일자 양력 2030년 1월 1일 (음력 2029년 11월 28일) */
             solYear = 2030;
             solMonth = 1;
             solDay = 1;
@@ -1081,7 +1170,35 @@ let sm_calendar = {
             solMonthDay[1] = 28;    /* 2030 년 2월 28일 */
             lunMonthDay = 30;   /* 2029년 11월 */
         }
-        else if (year >= 2000) {
+        else if (year >= 2020) {
+            /* 기준일자 양력 2020년 1월 1일 (음력 2019년 12월 7일) */
+            solYear = 2020;
+            solMonth = 1;
+            solDay = 1;
+            lunYear = 2019;
+            lunMonth = 12;
+            lunDay = 7;
+            lunLeapMonth = 0;
+
+            solMonthDay[1] = 29;    /* 2020 년 2월 29일 */
+            lunMonthDay = 30;   /* 2029년 12월 */
+
+            LUNAR_HOLIDAY[0].day = 30;
+        }
+        else if (year >= 2010) {
+            /* 기준일자 양력 2010년 1월 1일 (음력 2009년 11월 17일) */
+            solYear = 2010;
+            solMonth = 1;
+            solDay = 1;
+            lunYear = 2009;
+            lunMonth = 11;
+            lunDay = 17;
+            lunLeapMonth = 0;
+
+            solMonthDay[1] = 28;    /* 2010 년 2월 28일 */
+            lunMonthDay = 30;   /* 2009년 11월 */
+        }
+        else {
             /* 기준일자 양력 2000년 1월 1일 (음력 1999년 11월 25일) */
             solYear = 2000;
             solMonth = 1;
@@ -1094,19 +1211,6 @@ let sm_calendar = {
             solMonthDay[1] = 29;    /* 2000 년 2월 28일 */
             lunMonthDay = 30;   /* 1999년 11월 */
         }
-        else {
-            /* 기준일자 양력 1970년 1월 1일 (음력 1969년 11월 24일) */
-            solYear = 1970;
-            solMonth = 1;
-            solDay = 1;
-            lunYear = 1969;
-            lunMonth = 11;
-            lunDay = 24;
-            lunLeapMonth = 0;
-
-            solMonthDay[1] = 28;    /* 1970 년 2월 28일 */
-            lunMonthDay = 30;   /* 1969년 11월 */
-        }
 
         lunIndex = lunYear - LAST_LUNAR_YEAR;
 
@@ -1115,18 +1219,47 @@ let sm_calendar = {
         // 반복문이 돌면서 양력 값들과 음력 값들을 1일 씩 증가시키고
         // 입력받은 날짜값과 양력 값이 일치할 때 음력값을 반환함
         while (true) {
+
             if (type == 1 &&
                 year == solYear &&
                 month == solMonth &&
                 day == solDay) {
-                return new myDate(lunYear, lunMonth, lunDay, lunLeapMonth);
+
+                // 음력 공휴일 날짜와 일치하면 객체에 공휴일 캡션 추가
+                var isHoli = false;
+                var caption = "";
+                for (var i = 0; i < LUNAR_HOLIDAY.length; i++) {
+                    if (lunMonth == LUNAR_HOLIDAY[i].month &&
+                        lunDay == LUNAR_HOLIDAY[i].day &&
+                        lunLeapMonth == 0) {
+                        isHoli = true;
+                        caption = LUNAR_HOLIDAY[i].caption;
+                    }
+                }
+
+                var dateObj = {
+                    year: lunYear,
+                    month: lunMonth,
+                    day: lunDay,
+                    leapMonth: lunLeapMonth,
+                    isHoli: isHoli,
+                    caption: caption
+                }
+                return dateObj;
             }
             else if (type == 2 &&
                 year == lunYear &&
                 month == lunMonth &&
                 day == lunDay &&
                 leapmonth == lunLeapMonth) {
-                return new myDate(solYear, solMonth, solDay, 0);
+
+                var dateObj = {
+                    year: solYear,
+                    month: solMonth,
+                    day: solDay,
+                    leapMonth: 0,
+                }
+                return dateObj;
             }
             // 양력의 마지막 날일 경우 년도를 증가시키고 나머지 초기화
             if (solMonth == 12 && solDay == 31) {
@@ -1161,10 +1294,10 @@ let sm_calendar = {
                 lunMonth = 1;
                 lunDay = 1;
 
-                if (lunYear > 2043) {
-                    alert("입력하신 달은 없습니다.");
-                    break;
-                }
+                // if (lunYear > 2043) {
+                //     alert("입력하신 달은 없습니다.");
+                //     break;
+                // }
 
                 // 년도가 바꼈으니 index값 수정
                 lunIndex = lunYear - LAST_LUNAR_YEAR;
@@ -1212,6 +1345,11 @@ let sm_calendar = {
                     lunMonthDay = 29;
                 else if (lunarMonthTable[lunIndex][lunMonth - 1] == 6)
                     lunMonthDay = 30;
+
+                // 12월 마지막날짜인 설날값 수정
+                if (lunLeapMonth == 0 && lunMonth == 12) {
+                    LUNAR_HOLIDAY[0].day = lunMonthDay;
+                }
             }
             else
                 lunDay++;
@@ -1231,11 +1369,6 @@ let sm_calendar = {
         /* 양력/음력 변환 */
         var date = this.lunarCalc(solYear, solMonth, solDay, SOLAR_TO_LUNAR);
 
-        // 음력 배열의 범위를 초과하면 공백 반환
-        if (date == undefined || date == "" || date == null)
-            return "";
-        else
-            return (date.leapMonth ? " (윤" : " (") + date.month + "." + date.day + ")";
-
+        return date;
     }
 }
