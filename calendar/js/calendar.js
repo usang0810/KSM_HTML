@@ -12,7 +12,7 @@ $(function () {
     sm_calendar.calendarInit();
 });
 let sm_calendar = {
-    defaultApiUrl: "http://127.0.0.1:8080",
+    defaultApiUrl: "http://localhost:8899",
     todayTime: undefined,
     listIdx: undefined,
     krTime: 1000 * 60 * 60 * 9,
@@ -50,7 +50,7 @@ let sm_calendar = {
     getServerTime: function () {
         var calendarObj = this;
         $.ajax({
-            url: "http://127.0.0.1:8080/getServerTime",
+            url: sm_calendar.defaultApiUrl + "/getServerTime",
             method: "get",
             dataType: "json",
             async: false,
@@ -160,7 +160,7 @@ let sm_calendar = {
         $("#sm_calendar_getListBtn").on("click", function () {
             calendarObj.getCalendarForm();
             $.ajax({
-                url: "http://127.0.0.1:8080/getCalendarInfo",
+                url: sm_calendar.defaultApiUrl + "/getCalendarInfo",
                 method: "get",
                 dataType: "json",
                 data: {
@@ -192,7 +192,7 @@ let sm_calendar = {
         $("#sm_calendar_deleteListBtn").on("click", function () {
             if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
-                    url: "http://127.0.0.1:8080/deleteCalendar",
+                    url: sm_calendar.defaultApiUrl + "/deleteCalendar",
                     method: "post",
                     dataType: "json",
                     data: {
@@ -333,7 +333,7 @@ let sm_calendar = {
             }
 
             $.ajax({
-                url: "http://127.0.0.1:8080/setCalendar",
+                url: sm_calendar.defaultApiUrl + "/setCalendar",
                 method: "post",
                 dataType: "json",
                 data: {
@@ -480,7 +480,7 @@ let sm_calendar = {
         $("#sm_setCalendar_deleteBtn").on("click", function () {
             if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
-                    url: "http://127.0.0.1:8080/deleteCalendar",
+                    url: sm_calendar.defaultApiUrl + "/deleteCalendar",
                     method: "post",
                     dataType: "json",
                     data: {
@@ -596,7 +596,7 @@ let sm_calendar = {
         $("#sm_setCalendar_deleteBtn").on("click", function () {
             if (confirm("일정을 삭제하시겠습니까?")) {
                 $.ajax({
-                    url: "http://127.0.0.1:8080/deleteCalendar",
+                    url: sm_calendar.defaultApiUrl + "/deleteCalendar",
                     method: "post",
                     dataType: "json",
                     data: {
@@ -666,7 +666,7 @@ let sm_calendar = {
 
             if (confirm("일정을 수정하시겠습니까?")) {
                 $.ajax({
-                    url: "http://127.0.0.1:8080/updateCalendar",
+                    url: sm_calendar.defaultApiUrl + "/updateCalendar",
                     method: "post",
                     dataType: "json",
                     data: {
@@ -704,7 +704,7 @@ let sm_calendar = {
 
             var returnValue;
             $.ajax({
-                url: "http://127.0.0.1:8080/getCalendarList",
+                url: sm_calendar.defaultApiUrl + "/getCalendarList",
                 method: "get",
                 dataType: "json",
                 async: false,
